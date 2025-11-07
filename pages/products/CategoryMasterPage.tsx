@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Customer, Company, Column } from '../../types';
+import { Category, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
-import { CustomerForm } from '../../components/forms/CustomerForm';
+import { CategoryForm } from '../../components/forms/CategoryForm';
 import { DataTable } from '../../components/ui/DataTable';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { PencilIcon } from '../../components/icons/PencilIcon';
@@ -10,61 +10,54 @@ import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useData } from '../../contexts/DataContext';
 
-const CustomerMasterPage: React.FC = () => {
-  const { customers, companies, addCustomer, updateCustomer, deleteCustomer } = useData();
+const CategoryMasterPage: React.FC = () => {
+  const { categories, addCategory, updateCategory, deleteCategory } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
   const handleAddNew = () => {
-    setEditingCustomer(null);
+    setEditingCategory(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (customer: Customer) => {
-    setEditingCustomer(customer);
+  const handleEdit = (category: Category) => {
+    setEditingCategory(category);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (customerId: string) => {
-    setCustomerToDelete(customerId);
+  const handleDelete = (categoryId: string) => {
+    setCategoryToDelete(categoryId);
     setIsConfirmModalOpen(true);
   };
   
   const confirmDelete = () => {
-    if (customerToDelete) {
-      deleteCustomer(customerToDelete);
+    if (categoryToDelete) {
+      deleteCategory(categoryToDelete);
+      // In a real app, you'd also want to handle subcategories and products that belong to this category.
     }
     setIsConfirmModalOpen(false);
-    setCustomerToDelete(null);
+    setCategoryToDelete(null);
   };
 
-  const handleSave = (customerData: Partial<Customer>) => {
-    if (editingCustomer) {
-      updateCustomer(editingCustomer.id, customerData);
+  const handleSave = (categoryData: Partial<Category>) => {
+    if (editingCategory) {
+      updateCategory(editingCategory.id, categoryData);
     } else {
-      addCustomer(customerData);
+      addCategory(categoryData);
     }
     setIsModalOpen(false);
-    setEditingCustomer(null);
+    setEditingCategory(null);
   };
 
-  const formatCurrency = (value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
-
-  const columns: Column<Customer>[] = [
+  const columns: Column<Category>[] = [
+    { header: 'ID', accessor: 'id', sortKey: 'id' },
     { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
-    { 
-      header: 'Company', 
-      accessor: (row) => companies.find(c => c.id === row.companyId)?.name || 'N/A', 
-      sortKey: 'companyId' 
-    },
-    { header: 'Mobile', accessor: 'mobile', sortKey: 'mobile' },
-    { header: 'City', accessor: 'city', sortKey: 'city' },
-    { header: 'Credit Limit', accessor: (row) => formatCurrency(row.creditLimit), sortKey: 'creditLimit' },
+    { header: 'Description', accessor: 'description', sortKey: 'description' },
     {
       header: 'Actions',
-      accessor: (row: Customer) => (
+      accessor: (row: Category) => (
         <div className="flex space-x-1">
           <Tooltip text="Edit">
             <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
@@ -84,27 +77,26 @@ const CustomerMasterPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Customer Master</h1>
-        <Button onClick={handleAddNew}>Add New Customer</Button>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Category Master</h1>
+        <Button onClick={handleAddNew}>Add New Category</Button>
       </div>
       
       <DataTable 
         columns={columns} 
-        data={customers}
-        searchKeys={['name', 'email', 'gstin', 'mobile', 'city', 'state']}
-        searchPlaceholder="Search Customers..."
+        data={categories}
+        searchKeys={['name', 'id', 'description']}
+        searchPlaceholder="Search Categories..."
       />
 
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingCustomer ? 'Edit Customer' : 'Add New Customer'}
+        title={editingCategory ? 'Edit Category' : 'Add New Category'}
       >
-        <CustomerForm 
-          customer={editingCustomer}
+        <CategoryForm 
+          category={editingCategory}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}
-          companies={companies}
         />
       </Modal>
 
@@ -113,10 +105,10 @@ const CustomerMasterPage: React.FC = () => {
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={confirmDelete}
         title="Confirm Deletion"
-        message="Are you sure you want to delete this customer? This action cannot be undone."
+        message="Are you sure you want to delete this category? This action cannot be undone."
       />
     </div>
   );
 };
 
-export default CustomerMasterPage;
+export default CategoryMasterPage;

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { mockCompanies } from '../../data/mockData';
 import { Company, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -9,9 +8,10 @@ import { DataTable } from '../../components/ui/DataTable';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
+import { useData } from '../../contexts/DataContext';
 
 const CompanyProfilePage: React.FC = () => {
-  const [companies, setCompanies] = useState<Company[]>(mockCompanies);
+  const { companies, addCompany, updateCompany, deleteCompany } = useData();
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -34,7 +34,7 @@ const CompanyProfilePage: React.FC = () => {
   
   const confirmDelete = () => {
     if (companyToDelete) {
-      setCompanies(companies.filter(c => c.id !== companyToDelete));
+      deleteCompany(companyToDelete);
     }
     setIsConfirmModalOpen(false);
     setCompanyToDelete(null);
@@ -42,15 +42,9 @@ const CompanyProfilePage: React.FC = () => {
 
   const handleSave = (companyData: Partial<Company>) => {
     if (editingCompany) {
-      // Edit existing company
-      setCompanies(companies.map(c => c.id === editingCompany.id ? { ...c, ...companyData } as Company : c));
+      updateCompany(editingCompany.id, companyData);
     } else {
-      // Add new company
-      const newCompany: Company = {
-        id: `COMP${String(companies.length + 101).slice(-3)}`, // Ensure unique ID
-        ...companyData,
-      } as Company;
-      setCompanies([...companies, newCompany]);
+      addCompany(companyData);
     }
     setIsFormModalOpen(false);
     setEditingCompany(null);

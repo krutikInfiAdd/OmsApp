@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   const SidebarContent = () => (
     <>
-      <div className="h-16 flex items-center justify-center px-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+      <div className="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <NavLink to="/" className="text-xl font-bold text-primary-600 dark:text-primary-400">PrimeLedger</NavLink>
       </div>
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

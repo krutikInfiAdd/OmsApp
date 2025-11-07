@@ -37,10 +37,32 @@
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.5",
-    "recharts": "https://aistudiocdn.com/recharts@^3.3.0"
+    "recharts": "https://aistudiocdn.com/recharts@^3.3.0",
+    "jspdf": "https://aistudiocdn.com/jspdf@^2.5.1",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1"
   }
 }
 </script>
+<style>
+  @media print {
+    body {
+      background-color: white !important;
+    }
+    .print-wrapper {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .print-card {
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+    @page {
+      size: A4;
+      margin: 20mm;
+    }
+  }
+</style>
 </head>
   <body class="bg-gray-50 dark:bg-gray-900">
     <div id="root"></div>

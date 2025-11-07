@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { mockSuppliers } from '../../data/mockData';
 import { Supplier, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -9,9 +8,10 @@ import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
+import { useData } from '../../contexts/DataContext';
 
 const SupplierMasterPage: React.FC = () => {
-  const [suppliers, setSuppliers] = useState<Supplier[]>(mockSuppliers);
+  const { suppliers, addSupplier, updateSupplier, deleteSupplier } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -34,7 +34,7 @@ const SupplierMasterPage: React.FC = () => {
   
   const confirmDelete = () => {
     if (supplierToDelete) {
-      setSuppliers(suppliers.filter(s => s.id !== supplierToDelete));
+      deleteSupplier(supplierToDelete);
     }
     setIsConfirmModalOpen(false);
     setSupplierToDelete(null);
@@ -42,23 +42,9 @@ const SupplierMasterPage: React.FC = () => {
 
   const handleSave = (supplierData: Partial<Supplier>) => {
     if (editingSupplier) {
-      // Edit existing supplier
-      setSuppliers(suppliers.map(s => s.id === editingSupplier.id ? { ...s, ...supplierData } as Supplier : s));
+      updateSupplier(editingSupplier.id, supplierData);
     } else {
-      // Add new supplier
-      const newSupplier: Supplier = {
-        id: `SUP${String(suppliers.length + 1).padStart(3, '0')}`, // Create a new unique ID
-        name: supplierData.name || '',
-        email: supplierData.email || '',
-        gstin: supplierData.gstin || '',
-        pan: supplierData.pan || '',
-        address: supplierData.address || '',
-        city: supplierData.city || '',
-        state: supplierData.state || '',
-        country: supplierData.country || '',
-        phone: supplierData.phone || '',
-      };
-      setSuppliers([...suppliers, newSupplier]);
+      addSupplier(supplierData);
     }
     setIsModalOpen(false);
     setEditingSupplier(null);

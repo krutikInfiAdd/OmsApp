@@ -1,4 +1,4 @@
-import { Customer, Product, Invoice, InvoiceStatus, InvoiceItem, Company, Supplier } from '../types';
+import { Customer, Product, Invoice, InvoiceStatus, InvoiceItem, Company, Supplier, Vendor, Category, Subcategory, Tax, TaxType, SalesOrder, SalesOrderStatus, PurchaseOrder, PurchaseOrderStatus, Quotation, QuotationStatus, CreditDebitNote, CreditDebitNoteType, CreditDebitNoteStatus, Account, AccountType, JournalVoucher, BankStatementTransaction, GRN, GRNStatus, BOM } from '../types';
 
 export const mockCompanies: Company[] = [
   {
@@ -243,6 +243,7 @@ export const mockCustomers: Customer[] = [
   { id: 'C017', name: 'Pacific Exports', email: 'pacific@exports.com', gstin: '24AACCP1212Q1Z7', companyId: 'COMP011', mobile: '9876534567', address: '666 Pacific Trade Hub', city: 'Surat', state: 'Gujarat', country: 'India', creditLimit: 900000 },
   { id: 'C018', name: 'Nexus Technologies', email: 'tech@nexus.io', gstin: '29AABCN4545R1Z8', companyId: 'COMP009', mobile: '9988774455', address: '777 Nexus Park', city: 'Bangalore', state: 'Karnataka', country: 'India', creditLimit: 1750000 },
   { id: 'C019', name: 'Everest Supplies', email: 'supplies@everest.com', gstin: '09AABCE8989S1Z9', companyId: 'COMP010', mobile: '9123465432', address: '888 Everest Heights', city: 'Noida', state: 'Uttar Pradesh', country: 'India', creditLimit: 650000 },
+  { id: 'C020', name: 'Retail Customer', email: 'retail@example.com', gstin: '', companyId: 'COMP001', mobile: '9000011111', address: '123 Main Street', city: 'Mumbai', state: 'Maharashtra', country: 'India', creditLimit: 10000 },
 ];
 
 export const mockSuppliers: Supplier[] = [
@@ -264,26 +265,83 @@ export const mockSuppliers: Supplier[] = [
   { id: 'SUP015', name: 'Techno Tools & Spares', email: 'spares@technotools.com', gstin: '36AABCT3535O1Z9', pan: 'AABCT3535O', address: 'Balanagar Industrial Area', city: 'Hyderabad', state: 'Telangana', country: 'India', phone: '9123476543' },
 ];
 
-
-export const mockProducts: Product[] = [
-  { id: 'P001', name: 'Pro Widget', hsnCode: '8471', price: 1500 },
-  { id: 'P002', name: 'Mega Gizmo', hsnCode: '8517', price: 3200 },
-  { id: 'P003', name: 'Hyper Module', hsnCode: '9013', price: 7800 },
-  { id: 'P004', name: 'Service Subscription', hsnCode: '9983', price: 5000 },
+export const mockVendors: Vendor[] = [
+  { id: 'VEND001', name: 'Service Pro Tech', email: 'support@servicepro.com', gstin: '29AAECS1234A1Z5', pan: 'AAECS1234A', address: '111 Service Lane, Koramangala', city: 'Bangalore', state: 'Karnataka', country: 'India', phone: '9876543211' },
+  { id: 'VEND002', name: 'Creative Consultants', email: 'projects@creative.co', gstin: '27AACCP5678B1Z7', pan: 'BACCP5678B', address: '22 Creative Hub, Andheri', city: 'Mumbai', state: 'Maharashtra', country: 'India', phone: '9123456780' },
+  { id: 'VEND003', name: 'Marketing Masters', email: 'campaigns@marketingmasters.com', gstin: '07AABCM9101C1Z8', pan: 'CABCM9101C', address: '33 Marketing Ave, DLF Cyber City', city: 'Gurgaon', state: 'Haryana', country: 'India', phone: '9988776654' },
+  { id: 'VEND004', name: 'Legal Eagles LLP', email: 'legal@eagles.law', gstin: '36AADCL1122D1Z9', pan: 'DADCL1122D', address: '44 Court Chambers, Connaught Place', city: 'New Delhi', state: 'Delhi', country: 'India', phone: '9555666778' },
+  { id: 'VEND005', name: 'Facility Management Experts', email: 'ops@facilityexperts.com', gstin: '33AABCF3344E1Z0', pan: 'EABCF3344E', address: '55 OMR IT Corridor', city: 'Chennai', state: 'Tamil Nadu', country: 'India', phone: '9876501235' },
+  { id: 'VEND006', name: 'CleanSweep Solutions', email: 'contact@cleansweep.com', gstin: '27AAACC4567F1Z1', pan: 'FACCC4567F', address: '66 Commercial Complex, Hinjewadi', city: 'Pune', state: 'Maharashtra', country: 'India', phone: '9122334455' },
+  { id: 'VEND007', name: 'HR Connect', email: 'info@hrconnect.in', gstin: '36AABCH8765G1Z2', pan: 'GABCH8765G', address: '77 Hitech City Main Rd', city: 'Hyderabad', state: 'Telangana', country: 'India', phone: '9233445566' },
+  { id: 'VEND008', name: 'Digital Wave Agency', email: 'hello@digitalwave.agency', gstin: '29AADCD9876H1Z3', pan: 'HADCD9876H', address: '88 MG Road, Trinity Circle', city: 'Bangalore', state: 'Karnataka', country: 'India', phone: '9344556677' },
+  { id: 'VEND009', name: 'SecureIT Services', email: 'security@secureit.co', gstin: '27AACCS3210I1Z4', pan: 'IACCS3210I', address: '99 BKC, Bandra', city: 'Mumbai', state: 'Maharashtra', country: 'India', phone: '9455667788' },
+  { id: 'VEND010', name: 'GreenScape Landscaping', email: 'projects@greenscape.com', gstin: '33AABCG1234J1Z5', pan: 'JABCG1234J', address: '110 Greenways Lane', city: 'Chennai', state: 'Tamil Nadu', country: 'India', phone: '9566778899' },
+  { id: 'VEND011', name: 'CaterRight Events', email: 'events@caterright.com', gstin: '07AADCE5678K1Z6', pan: 'KADCE5678K', address: '121 Hauz Khas Village', city: 'New Delhi', state: 'Delhi', country: 'India', phone: '9677889900' },
+  { id: 'VEND012', name: 'TravelWise Corporate', email: 'bookings@travelwise.corp', gstin: '06AABCT9012L1Z7', pan: 'LABCT9012L', address: '132 Golf Course Road', city: 'Gurgaon', state: 'Haryana', country: 'India', phone: '9788990011' },
+  { id: 'VEND013', name: 'AuditPro Associates', email: 'partner@auditpro.com', gstin: '19AACCA3456M1Z8', pan: 'MACCA3456M', address: '143 Park Street', city: 'Kolkata', state: 'West Bengal', country: 'India', phone: '9899001122' },
+  { id: 'VEND014', name: 'Innovate Web Devs', email: 'dev@innovateweb.io', gstin: '27AADCI7890N1Z9', pan: 'NADCI7890N', address: '154 Magarpatta City', city: 'Pune', state: 'Maharashtra', country: 'India', phone: '9900112233' },
+  { id: 'VEND015', name: 'BrandBuilders PR', email: 'media@brandbuilders.com', gstin: '27AABCB2109O1Z0', pan: 'OABCB2109O', address: '165 Lower Parel', city: 'Mumbai', state: 'Maharashtra', country: 'India', phone: '9011223344' },
+  { id: 'VEND016', name: 'QuickFix Maintenance', email: 'service@quickfix.in', gstin: '29AACQ4321P1Z1', pan: 'PACQ4321P', address: '176 Electronic City', city: 'Bangalore', state: 'Karnataka', country: 'India', phone: '9122334455' }
 ];
 
-const createMockItems = (count: number): InvoiceItem[] => {
-  const items: InvoiceItem[] = [];
-  for (let i = 0; i < count; i++) {
-    const product = mockProducts[i % mockProducts.length];
-    const quantity = Math.floor(Math.random() * 5) + 1;
-    const rate = product.price;
-    const tax = 18; // 18% GST
-    const total = quantity * rate * (1 + tax / 100);
-    items.push({ product, quantity, rate, tax, total });
-  }
-  return items;
-};
+export const mockCategories: Category[] = [
+  { id: 'CAT001', name: 'Electronics', description: 'Devices and gadgets that use electricity.' },
+  { id: 'CAT002', name: 'Office Supplies', description: 'Consumables and equipment regularly used in offices.' },
+  { id: 'CAT003', name: 'Furniture', description: 'Chairs, desks, and storage for the workplace.' },
+  { id: 'CAT004', name: 'Industrial', description: 'Materials and supplies for manufacturing and industrial processes.' },
+  { id: 'CAT005', name: 'Software', description: 'Applications and programs for computers.' },
+];
+
+export const mockSubcategories: Subcategory[] = [
+  { id: 'SUB001', name: 'Laptops & Computers', categoryId: 'CAT001', description: 'All kinds of personal computers and notebooks.' },
+  { id: 'SUB002', name: 'Peripherals', categoryId: 'CAT001', description: 'Accessories like mice, keyboards, webcams, etc.' },
+  { id: 'SUB003', name: 'Monitors', categoryId: 'CAT001', description: 'High-resolution displays for computers.' },
+  { id: 'SUB004', name: 'Networking', categoryId: 'CAT001', description: 'Routers, switches, and networking cables.' },
+  { id: 'SUB005', name: 'Stationery', categoryId: 'CAT002', description: 'Pens, paper, notebooks, and other writing materials.' },
+  { id: 'SUB006', name: 'Consumables', categoryId: 'CAT002', description: 'Printer cartridges, toners, and other replaceable items.' },
+  { id: 'SUB007', name: 'Chairs & Seating', categoryId: 'CAT003', description: 'Ergonomic office chairs and guest seating.' },
+  { id: 'SUB008', name: 'Desks & Tables', categoryId: 'CAT003', description: 'Workstations, standing desks, and conference tables.' },
+  { id: 'SUB009', name: 'Lubricants & Chemicals', categoryId: 'CAT004', description: 'Industrial grade chemicals for machinery.' },
+  { id: 'SUB010', name: 'Fasteners', categoryId: 'CAT004', description: 'Nuts, bolts, screws, and other hardware.' },
+  { id: 'SUB011', name: 'Accounting & ERP', categoryId: 'CAT005', description: 'Business management and financial software.' },
+  { id: 'SUB012', name: 'Office Suites', categoryId: 'CAT005', description: 'Productivity software suites like Microsoft Office.' },
+];
+
+export const mockTaxes: Tax[] = [
+  { id: 'TAX001', name: 'GST 5%', type: TaxType.GST, rate: 5, description: 'Standard GST rate for essential items.' },
+  { id: 'TAX002', name: 'GST 12%', type: TaxType.GST, rate: 12, description: 'GST rate for processed foods, etc.' },
+  { id: 'TAX003', name: 'GST 18%', type: TaxType.GST, rate: 18, description: 'Standard GST rate for most services and goods.' },
+  { id: 'TAX004', name: 'GST 28%', type: TaxType.GST, rate: 28, description: 'GST rate for luxury items.' },
+  { id: 'TAX005', name: 'Compensation Cess', type: TaxType.Cess, rate: 15, description: 'Cess on luxury cars and tobacco products.' },
+  { id: 'TAX006', name: 'TDS on Rent (194-I)', type: TaxType.TDS, rate: 10, description: 'TDS applicable on rent payments exceeding the threshold.' },
+  { id: 'TAX007', name: 'TDS on Professional Fees (194J)', type: TaxType.TDS, rate: 10, description: 'TDS on fees for professional or technical services.' },
+];
+
+export const mockProducts: Product[] = [
+  { id: 'P001', name: 'Dell Latitude 7420 Laptop', code: 'LP-DELL-7420', hsnCode: '8471', unit: 'PCS', rate: 95000, taxId: 'TAX003', categoryId: 'CAT001', subcategoryId: 'SUB001', stock: 25 },
+  { id: 'P002', name: 'Logitech MX Master 3S Mouse', code: 'MSE-LOGI-MX3S', hsnCode: '847160', unit: 'PCS', rate: 8500, taxId: 'TAX003', categoryId: 'CAT001', subcategoryId: 'SUB002', stock: 78 },
+  { id: 'P003', name: 'Samsung Odyssey G9 Monitor', code: 'MON-SAM-G9', hsnCode: '8528', unit: 'PCS', rate: 120000, taxId: 'TAX004', categoryId: 'CAT001', subcategoryId: 'SUB003', stock: 8 },
+  { id: 'P004', name: 'Office 365 Business Subscription', code: 'SUB-MS-365B', hsnCode: '9983', unit: 'SET', rate: 8000, taxId: 'TAX003', categoryId: 'CAT005', subcategoryId: 'SUB012', stock: 999 },
+  { id: 'P005', name: 'Steelcase Ergonomic Chair', code: 'CHR-STL-ERGO', hsnCode: '9401', unit: 'PCS', rate: 45000, taxId: 'TAX004', categoryId: 'CAT003', subcategoryId: 'SUB007', stock: 0 },
+  { id: 'P006', name: 'A4 Printing Paper Ream', code: 'PAP-A4-75GSM', hsnCode: '4802', unit: 'BOX', rate: 2500, taxId: 'TAX002', categoryId: 'CAT002', subcategoryId: 'SUB005', stock: 150 },
+  { id: 'P007', name: 'Industrial Grade Lubricant', code: 'LUBE-IND-5L', hsnCode: '2710', unit: 'LTR', rate: 1200, taxId: 'TAX003', categoryId: 'CAT004', subcategoryId: 'SUB009', stock: 45 },
+  { id: 'P008', name: 'Heavy Duty Steel Screws', code: 'SCR-STL-HD-1KG', hsnCode: '7318', unit: 'KG', rate: 450, taxId: 'TAX003', categoryId: 'CAT004', subcategoryId: 'SUB010', stock: 210 },
+  { id: 'P009', name: 'Cisco Catalyst 9300 Switch', code: 'SW-CIS-9300', hsnCode: '8517', unit: 'PCS', rate: 150000, taxId: 'TAX003', categoryId: 'CAT001', subcategoryId: 'SUB004', stock: 5 },
+  { id: 'P010', name: 'TallyPrime Gold Software', code: 'SW-TALLY-GLD', hsnCode: '9973', unit: 'SET', rate: 54000, taxId: 'TAX003', categoryId: 'CAT005', subcategoryId: 'SUB011', stock: 999 },
+  { id: 'P011', name: 'Executive Office Desk', code: 'DSK-EXEC-WD', hsnCode: '9403', unit: 'PCS', rate: 32000, taxId: 'TAX004', categoryId: 'CAT003', subcategoryId: 'SUB008', stock: 12 },
+  { id: 'P012', name: 'Packing Tape Rolls (Box of 24)', code: 'TAPE-PACK-24', hsnCode: '3919', unit: 'BOX', rate: 900, taxId: 'TAX002', categoryId: 'CAT002', subcategoryId: 'SUB006', stock: 300 },
+  { id: 'P013', name: 'Hand Sanitizer 5L Can', code: 'SAN-5L-CAN', hsnCode: '3808', unit: 'LTR', rate: 850, taxId: 'TAX003', categoryId: 'CAT002', subcategoryId: 'SUB006', stock: 88 },
+  { id: 'P014', name: 'Custom PC Build', code: 'PC-CUSTOM-01', hsnCode: '8471', unit: 'SET', rate: 75000, taxId: 'TAX003', categoryId: 'CAT001', subcategoryId: 'SUB001', stock: 5 },
+  { id: 'P015', name: 'Intel Core i7 CPU', code: 'CPU-INT-I7', hsnCode: '8542', unit: 'PCS', rate: 30000, taxId: 'TAX003', categoryId: 'CAT001', subcategoryId: 'SUB001', stock: 50 },
+  { id: 'P016', name: 'Nvidia RTX 3060 GPU', code: 'GPU-NV-3060', hsnCode: '8473', unit: 'PCS', rate: 25000, taxId: 'TAX004', categoryId: 'CAT001', subcategoryId: 'SUB001', stock: 30 },
+  { id: 'P017', name: '16GB DDR4 RAM', code: 'RAM-DDR4-16G', hsnCode: '8473', unit: 'PCS', rate: 4000, taxId: 'TAX003', categoryId: 'CAT001', subcategoryId: 'SUB001', stock: 100 },
+];
+
+const getTaxRateById = (taxId?: string): number => {
+    if (!taxId) return 0;
+    const tax = mockTaxes.find(t => t.id === taxId);
+    return tax ? tax.rate : 0;
+}
 
 export const mockInvoices: Invoice[] = [
   {
@@ -292,9 +350,11 @@ export const mockInvoices: Invoice[] = [
     customer: mockCustomers[0],
     issueDate: '2024-07-15',
     dueDate: '2024-08-14',
-    amount: 1770,
+    amount: 336300,
     status: InvoiceStatus.Paid,
-    items: createMockItems(1)
+    items: [
+      { product: mockProducts[0], quantity: 3, rate: 95000, tax: 18, total: 336300 }
+    ]
   },
   {
     id: 'INV002',
@@ -302,9 +362,12 @@ export const mockInvoices: Invoice[] = [
     customer: mockCustomers[1],
     issueDate: '2024-07-20',
     dueDate: '2024-08-19',
-    amount: 7552,
+    amount: 132160,
     status: InvoiceStatus.Pending,
-    items: createMockItems(2)
+    items: [
+        { product: mockProducts[0], quantity: 1, rate: mockProducts[0].rate, tax: getTaxRateById(mockProducts[0].taxId), total: 112100 },
+        { product: mockProducts[1], quantity: 2, rate: mockProducts[1].rate, tax: getTaxRateById(mockProducts[1].taxId), total: 20060 }
+    ]
   },
   {
     id: 'INV003',
@@ -312,9 +375,11 @@ export const mockInvoices: Invoice[] = [
     customer: mockCustomers[2],
     issueDate: '2024-06-10',
     dueDate: '2024-07-10',
-    amount: 9204,
+    amount: 153600,
     status: InvoiceStatus.Overdue,
-    items: createMockItems(1)
+    items: [
+        { product: mockProducts[2], quantity: 1, rate: mockProducts[2].rate, tax: getTaxRateById(mockProducts[2].taxId), total: 153600 }
+    ]
   },
   {
     id: 'INV004',
@@ -322,9 +387,11 @@ export const mockInvoices: Invoice[] = [
     customer: mockCustomers[3],
     issueDate: '2024-07-22',
     dueDate: '2024-08-21',
-    amount: 11800,
+    amount: 18880,
     status: InvoiceStatus.Pending,
-    items: createMockItems(2)
+    items: [
+        { product: mockProducts[3], quantity: 2, rate: mockProducts[3].rate, tax: getTaxRateById(mockProducts[3].taxId), total: 18880 }
+    ]
   },
   {
     id: 'INV005',
@@ -332,25 +399,321 @@ export const mockInvoices: Invoice[] = [
     customer: mockCustomers[0],
     issueDate: '2024-07-25',
     dueDate: '2024-08-24',
-    amount: 5900,
+    amount: 57600,
     status: InvoiceStatus.Draft,
-    items: createMockItems(1)
+    items: [
+        { product: mockProducts[4], quantity: 1, rate: mockProducts[4].rate, tax: getTaxRateById(mockProducts[4].taxId), total: 57600 }
+    ]
+  },
+  {
+    id: 'INV006',
+    invoiceNumber: '2024-006',
+    customer: mockCustomers[19],
+    issueDate: '2024-07-28',
+    dueDate: '2024-08-27',
+    amount: 2800,
+    status: InvoiceStatus.Paid,
+    items: [
+      { product: mockProducts[5], quantity: 1, rate: 2500, tax: 12, total: 2800 }
+    ]
   },
 ];
 
+export const mockSalesOrders: SalesOrder[] = [
+  {
+    id: 'SO001',
+    orderNumber: 'SO-2024-001',
+    customer: mockCustomers[4],
+    orderDate: '2024-07-10',
+    shipmentDate: '2024-07-20',
+    amount: 177000,
+    status: SalesOrderStatus.Shipped,
+    items: [
+      { product: mockProducts[8], quantity: 1, rate: 150000, tax: getTaxRateById(mockProducts[8].taxId), total: 177000 },
+    ]
+  },
+  {
+    id: 'SO002',
+    orderNumber: 'SO-2024-002',
+    customer: mockCustomers[5],
+    orderDate: '2024-07-12',
+    shipmentDate: '2024-07-22',
+    amount: 63720,
+    status: SalesOrderStatus.Confirmed,
+    items: [
+      { product: mockProducts[9], quantity: 1, rate: 54000, tax: getTaxRateById(mockProducts[9].taxId), total: 63720 },
+    ]
+  },
+  {
+    id: 'SO003',
+    orderNumber: 'SO-2024-003',
+    customer: mockCustomers[0],
+    orderDate: '2024-07-28',
+    shipmentDate: '2024-08-05',
+    amount: 112100,
+    status: SalesOrderStatus.Draft,
+    items: [
+      { product: mockProducts[0], quantity: 1, rate: 95000, tax: getTaxRateById(mockProducts[0].taxId), total: 112100 },
+    ]
+  }
+];
+
+export const mockPurchaseOrders: PurchaseOrder[] = [
+  {
+    id: 'PO001',
+    orderNumber: 'PO-2024-001',
+    supplier: mockSuppliers[0],
+    orderDate: '2024-07-05',
+    expectedDeliveryDate: '2024-07-25',
+    amount: 2832,
+    status: PurchaseOrderStatus.Received,
+    items: [
+      { product: mockProducts[6], quantity: 2, rate: 1200, tax: getTaxRateById(mockProducts[6].taxId), total: 2832 },
+    ]
+  },
+  {
+    id: 'PO002',
+    orderNumber: 'PO-2024-002',
+    supplier: mockSuppliers[1],
+    orderDate: '2024-07-08',
+    expectedDeliveryDate: '2024-08-01',
+    amount: 10620,
+    status: PurchaseOrderStatus.Approved,
+    items: [
+      { product: mockProducts[7], quantity: 20, rate: 450, tax: getTaxRateById(mockProducts[7].taxId), total: 10620 },
+    ]
+  },
+  {
+    id: 'PO003',
+    orderNumber: 'PO-2024-003',
+    supplier: mockSuppliers[5],
+    orderDate: '2024-07-29',
+    expectedDeliveryDate: '2024-08-15',
+    amount: 0,
+    status: PurchaseOrderStatus.Draft,
+    items: []
+  }
+];
+
+export const mockQuotations: Quotation[] = [
+  {
+    id: 'QT001',
+    quotationNumber: 'QT-2024-001',
+    customer: mockCustomers[6],
+    issueDate: '2024-07-01',
+    expiryDate: '2024-07-31',
+    amount: 112100,
+    status: QuotationStatus.Accepted,
+    items: [
+      { product: mockProducts[0], quantity: 1, rate: 95000, tax: getTaxRateById(mockProducts[0].taxId), total: 112100 },
+    ]
+  },
+  {
+    id: 'QT002',
+    quotationNumber: 'QT-2024-002',
+    customer: mockCustomers[7],
+    issueDate: '2024-07-15',
+    expiryDate: '2024-08-14',
+    amount: 105900,
+    status: QuotationStatus.Sent,
+    items: [
+      { product: mockProducts[1], quantity: 10, rate: 8500, tax: getTaxRateById(mockProducts[1].taxId), total: 100300 },
+      { product: mockProducts[5], quantity: 2, rate: 2500, tax: getTaxRateById(mockProducts[5].taxId), total: 5600 },
+    ]
+  },
+  {
+    id: 'QT003',
+    quotationNumber: 'QT-2024-003',
+    customer: mockCustomers[8],
+    issueDate: '2024-07-20',
+    expiryDate: '2024-08-19',
+    amount: 0,
+    status: QuotationStatus.Draft,
+    items: []
+  },
+  {
+    id: 'QT004',
+    quotationNumber: 'QT-2024-004',
+    customer: mockCustomers[9],
+    issueDate: '2024-06-25',
+    expiryDate: '2024-07-25',
+    amount: 57600,
+    status: QuotationStatus.Rejected,
+    items: [
+        { product: mockProducts[4], quantity: 1, rate: 45000, tax: getTaxRateById(mockProducts[4].taxId), total: 57600 }
+    ]
+  }
+];
+
+export const mockCreditDebitNotes: CreditDebitNote[] = [
+  {
+    id: 'CDN001',
+    noteNumber: 'CN-2024-001',
+    type: CreditDebitNoteType.Credit,
+    customer: mockCustomers[0],
+    invoiceId: 'INV001',
+    issueDate: '2024-07-20',
+    amount: 5000,
+    reason: 'Goods returned: Damaged item',
+    status: CreditDebitNoteStatus.Issued,
+  },
+  {
+    id: 'CDN002',
+    noteNumber: 'DN-2024-001',
+    type: CreditDebitNoteType.Debit,
+    customer: mockCustomers[1],
+    issueDate: '2024-07-22',
+    amount: 1200,
+    reason: 'Price correction on invoice INV002',
+    status: CreditDebitNoteStatus.Issued,
+  },
+  {
+    id: 'CDN003',
+    noteNumber: 'CN-2024-002',
+    type: CreditDebitNoteType.Credit,
+    customer: mockCustomers[3],
+    issueDate: '2024-07-25',
+    amount: 880,
+    reason: 'Discount not applied on initial invoice',
+    status: CreditDebitNoteStatus.Draft,
+  },
+];
+
+export const mockChartOfAccounts: Account[] = [
+  { id: 'ACC001', name: 'Cash', type: AccountType.Asset },
+  { id: 'ACC002', name: 'Bank Account', type: AccountType.Asset },
+  { id: 'ACC003', name: 'Accounts Receivable', type: AccountType.Asset },
+  { id: 'ACC004', name: 'Inventory', type: AccountType.Asset },
+  { id: 'ACC005', name: 'Prepaid Expenses', type: AccountType.Asset },
+  { id: 'ACC101', name: 'Accounts Payable', type: AccountType.Liability },
+  { id: 'ACC102', name: 'Unearned Revenue', type: AccountType.Liability },
+  { id: 'ACC103', name: 'Loans Payable', type: AccountType.Liability },
+  { id: 'ACC151', name: 'Capital Account', type: AccountType.Equity },
+  { id: 'ACC201', name: 'Sales Revenue', type: AccountType.Income },
+  { id: 'ACC202', name: 'Service Revenue', type: AccountType.Income },
+  { id: 'ACC301', name: 'Rent Expense', type: AccountType.Expense },
+  { id: 'ACC302', name: 'Salaries Expense', type: AccountType.Expense },
+  { id: 'ACC303', name: 'Utilities Expense', type: AccountType.Expense },
+  { id: 'ACC304', name: 'Cost of Goods Sold', type: AccountType.Expense },
+];
+
+export const mockJournalVouchers: JournalVoucher[] = [
+  {
+    id: 'JV000',
+    voucherNumber: 'JV-2024-000',
+    date: '2024-07-01',
+    narration: 'Initial capital investment by owner.',
+    entries: [
+      { accountId: 'ACC002', debit: 500000, credit: 0 },
+      { accountId: 'ACC151', debit: 0, credit: 500000 },
+    ],
+  },
+  {
+    id: 'JV001',
+    voucherNumber: 'JV-2024-001',
+    date: '2024-07-10',
+    narration: 'Cash sales made for the day.',
+    entries: [
+      { accountId: 'ACC001', debit: 50000, credit: 0 },
+      { accountId: 'ACC201', debit: 0, credit: 50000 },
+    ],
+  },
+  {
+    id: 'JV002',
+    voucherNumber: 'JV-2024-002',
+    date: '2024-07-12',
+    narration: 'Paid office rent for July via bank transfer.',
+    entries: [
+      { accountId: 'ACC301', debit: 25000, credit: 0 },
+      { accountId: 'ACC002', debit: 0, credit: 25000 },
+    ],
+  },
+  {
+    id: 'JV003',
+    voucherNumber: 'JV-2024-003',
+    date: '2024-07-15',
+    narration: 'Purchase of goods on credit from a supplier.',
+    entries: [
+      { accountId: 'ACC004', debit: 75000, credit: 0 },
+      { accountId: 'ACC101', debit: 0, credit: 75000 },
+    ],
+  },
+  {
+    id: 'JV004',
+    voucherNumber: 'JV-2024-004',
+    date: '2024-07-28',
+    narration: 'Payment to Global Raw Materials for supplies.',
+    entries: [
+      { accountId: 'ACC101', debit: 15000, credit: 0 },
+      { accountId: 'ACC002', debit: 0, credit: 15000 },
+    ],
+  },
+  {
+    id: 'JV005',
+    voucherNumber: 'JV-2024-005',
+    date: '2024-07-25',
+    narration: 'Received payment from Innovate Corp.',
+    entries: [
+      { accountId: 'ACC002', debit: 50000, credit: 0 },
+      { accountId: 'ACC003', debit: 0, credit: 50000 },
+    ],
+  },
+];
+
+export const mockBankStatementTransactions: BankStatementTransaction[] = [
+  { id: 'BST001', date: '2024-07-01', description: 'Opening Balance/Capital Infusion', debit: 0, credit: 500000 },
+  { id: 'BST002', date: '2024-07-12', description: 'Rent Payment - July', debit: 25000, credit: 0 },
+  { id: 'BST003', date: '2024-07-26', description: 'Client Payment - Innovate Corp', debit: 0, credit: 50000 },
+  { id: 'BST004', date: '2024-07-31', description: 'Bank Service Charge', debit: 500, credit: 0 },
+  { id: 'BST005', date: '2024-07-31', description: 'Interest Credited', debit: 0, credit: 1250 },
+];
+
+export const mockGrns: GRN[] = [
+  {
+    id: 'GRN001',
+    grnNumber: 'GRN-2024-001',
+    purchaseOrderId: 'PO001',
+    purchaseOrderNumber: 'PO-2024-001',
+    supplier: mockSuppliers[0],
+    grnDate: '2024-07-25',
+    status: GRNStatus.Completed,
+    items: [
+      {
+        product: mockProducts[6],
+        orderedQuantity: 2,
+        receivedQuantity: 2,
+      },
+    ]
+  }
+];
+
+export const mockBoms: BOM[] = [
+  {
+    id: 'BOM001',
+    bomNumber: 'BOM-2024-001',
+    product: mockProducts.find(p => p.id === 'P014')!,
+    creationDate: '2024-07-20',
+    items: [
+      { product: mockProducts.find(p => p.id === 'P015')!, quantity: 1 },
+      { product: mockProducts.find(p => p.id === 'P016')!, quantity: 1 },
+      { product: mockProducts.find(p => p.id === 'P017')!, quantity: 2 },
+    ]
+  }
+];
+
 export const dashboardMetrics = {
-    totalRevenue: 34226,
-    pendingAmount: 19352,
+    totalRevenue: 336300,
+    pendingAmount: 132160 + 18880,
     overdueInvoices: 1,
     newCustomers: 4
 };
 
 export const monthlySalesData = [
-    { name: 'Jan', sales: 4000 },
-    { name: 'Feb', sales: 3000 },
-    { name: 'Mar', sales: 5000 },
-    { name: 'Apr', sales: 4500 },
-    { name: 'May', sales: 6000 },
-    { name: 'Jun', sales: 5500 },
-    { name: 'Jul', sales: 7000 },
+    { name: 'Jan', sales: 400000 },
+    { name: 'Feb', sales: 300000 },
+    { name: 'Mar', sales: 500000 },
+    { name: 'Apr', sales: 450000 },
+    { name: 'May', sales: 600000 },
+    { name: 'Jun', sales: 550000 },
+    { name: 'Jul', sales: 700000 },
 ];

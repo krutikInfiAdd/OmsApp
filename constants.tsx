@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { NavItem } from './types';
 import { HomeIcon } from './components/icons/HomeIcon';
@@ -8,6 +9,7 @@ import { InventoryIcon } from './components/icons/InventoryIcon';
 import { AccountingIcon } from './components/icons/AccountingIcon';
 import { ReportsIcon } from './components/icons/ReportsIcon';
 import { SettingsIcon } from './components/icons/SettingsIcon';
+import { ProductIcon } from './components/icons/ProductIcon';
 
 export const NAVIGATION_LINKS: NavItem[] = [
   { label: 'Dashboard', path: '/', icon: HomeIcon },
@@ -32,6 +34,16 @@ export const NAVIGATION_LINKS: NavItem[] = [
     icon: InventoryIcon,
     children: [
       { label: 'Stock Management', path: '/inventory/stock', icon: () => null },
+      { label: 'Goods Received (GRN)', path: '/inventory/grn', icon: () => null },
+    ],
+  },
+  {
+    label: 'Products',
+    icon: ProductIcon,
+    children: [
+      { label: 'Product Master', path: '/products/master', icon: () => null },
+      { label: 'Category Master', path: '/products/categories', icon: () => null },
+      { label: 'Subcategory Master', path: '/products/subcategories', icon: () => null },
     ],
   },
   {
@@ -46,6 +58,7 @@ export const NAVIGATION_LINKS: NavItem[] = [
     icon: AccountingIcon,
     children: [
       { label: 'Journal Vouchers', path: '/accounting/journal', icon: () => null },
+      { label: 'Credit/Debit Notes', path: '/accounting/credit-debit-notes', icon: () => null },
       { label: 'Balance Sheet', path: '/accounting/balance-sheet', icon: () => null },
     ],
   },
@@ -77,6 +90,8 @@ export const NAVIGATION_LINKS: NavItem[] = [
       { label: 'Company Profile', path: '/settings/company', icon: () => null },
       { label: 'Customer Master', path: '/settings/customers', icon: () => null },
       { label: 'Supplier Master', path: '/settings/suppliers', icon: () => null },
+      { label: 'Vendor Master', path: '/settings/vendors', icon: () => null },
+      { label: 'Tax Master', path: '/settings/taxes', icon: () => null },
       { label: 'Users & Roles', path: '/settings/users', icon: () => null },
     ],
   },

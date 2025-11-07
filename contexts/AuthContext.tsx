@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from '../types';
+import { User, UserRole } from '../types';
 import { mockUsers, addUser } from '../data/users';
+import { useData } from './DataContext';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const { users } = useData(); // Get users from central context
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const signIn = async (email: string, password: string): Promise<boolean> => {
+    // Note: We use the original mockUsers for password check, as context doesn't expose passwords
     const foundUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
     if (foundUser) {
       const userToStore = { ...foundUser };
@@ -44,14 +47,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signUp = async (name: string, email: string, password: string): Promise<boolean> => {
-    const existingUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
     if (existingUser) {
-      // Could return a more specific error message
       return false;
     }
     
     // In a real app, the default company might be handled differently
-    const newUser = addUser({ name, email, password, companyId: 'COMP001' });
+    const newUser = addUser({ name, email, password, companyId: 'COMP001', role: UserRole.Sales });
     
     const userToStore = { ...newUser };
     delete userToStore.password;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Customer, Company, Column } from '../../types';
+import { Subcategory, Category, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
-import { CustomerForm } from '../../components/forms/CustomerForm';
+import { SubcategoryForm } from '../../components/forms/SubcategoryForm';
 import { DataTable } from '../../components/ui/DataTable';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { PencilIcon } from '../../components/icons/PencilIcon';
@@ -10,61 +10,58 @@ import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useData } from '../../contexts/DataContext';
 
-const CustomerMasterPage: React.FC = () => {
-  const { customers, companies, addCustomer, updateCustomer, deleteCustomer } = useData();
+const SubcategoryMasterPage: React.FC = () => {
+  const { subcategories, categories, addSubcategory, updateSubcategory, deleteSubcategory } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [editingSubcategory, setEditingSubcategory] = useState<Subcategory | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
+  const [subcategoryToDelete, setSubcategoryToDelete] = useState<string | null>(null);
 
   const handleAddNew = () => {
-    setEditingCustomer(null);
+    setEditingSubcategory(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (customer: Customer) => {
-    setEditingCustomer(customer);
+  const handleEdit = (subcategory: Subcategory) => {
+    setEditingSubcategory(subcategory);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (customerId: string) => {
-    setCustomerToDelete(customerId);
+  const handleDelete = (subcategoryId: string) => {
+    setSubcategoryToDelete(subcategoryId);
     setIsConfirmModalOpen(true);
   };
   
   const confirmDelete = () => {
-    if (customerToDelete) {
-      deleteCustomer(customerToDelete);
+    if (subcategoryToDelete) {
+      deleteSubcategory(subcategoryToDelete);
     }
     setIsConfirmModalOpen(false);
-    setCustomerToDelete(null);
+    setSubcategoryToDelete(null);
   };
 
-  const handleSave = (customerData: Partial<Customer>) => {
-    if (editingCustomer) {
-      updateCustomer(editingCustomer.id, customerData);
+  const handleSave = (subcategoryData: Partial<Subcategory>) => {
+    if (editingSubcategory) {
+      updateSubcategory(editingSubcategory.id, subcategoryData);
     } else {
-      addCustomer(customerData);
+      addSubcategory(subcategoryData);
     }
     setIsModalOpen(false);
-    setEditingCustomer(null);
+    setEditingSubcategory(null);
   };
 
-  const formatCurrency = (value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
-
-  const columns: Column<Customer>[] = [
+  const columns: Column<Subcategory>[] = [
+    { header: 'ID', accessor: 'id', sortKey: 'id' },
     { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
+    { header: 'Description', accessor: 'description', sortKey: 'description' },
     { 
-      header: 'Company', 
-      accessor: (row) => companies.find(c => c.id === row.companyId)?.name || 'N/A', 
-      sortKey: 'companyId' 
+      header: 'Parent Category', 
+      accessor: (row) => categories.find(c => c.id === row.categoryId)?.name || 'N/A', 
+      sortKey: 'categoryId' 
     },
-    { header: 'Mobile', accessor: 'mobile', sortKey: 'mobile' },
-    { header: 'City', accessor: 'city', sortKey: 'city' },
-    { header: 'Credit Limit', accessor: (row) => formatCurrency(row.creditLimit), sortKey: 'creditLimit' },
     {
       header: 'Actions',
-      accessor: (row: Customer) => (
+      accessor: (row: Subcategory) => (
         <div className="flex space-x-1">
           <Tooltip text="Edit">
             <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
@@ -84,27 +81,27 @@ const CustomerMasterPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Customer Master</h1>
-        <Button onClick={handleAddNew}>Add New Customer</Button>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Subcategory Master</h1>
+        <Button onClick={handleAddNew}>Add New Subcategory</Button>
       </div>
       
       <DataTable 
         columns={columns} 
-        data={customers}
-        searchKeys={['name', 'email', 'gstin', 'mobile', 'city', 'state']}
-        searchPlaceholder="Search Customers..."
+        data={subcategories}
+        searchKeys={['name', 'id', 'description']}
+        searchPlaceholder="Search Subcategories..."
       />
 
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingCustomer ? 'Edit Customer' : 'Add New Customer'}
+        title={editingSubcategory ? 'Edit Subcategory' : 'Add New Subcategory'}
       >
-        <CustomerForm 
-          customer={editingCustomer}
+        <SubcategoryForm 
+          subcategory={editingSubcategory}
+          categories={categories}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}
-          companies={companies}
         />
       </Modal>
 
@@ -113,10 +110,10 @@ const CustomerMasterPage: React.FC = () => {
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={confirmDelete}
         title="Confirm Deletion"
-        message="Are you sure you want to delete this customer? This action cannot be undone."
+        message="Are you sure you want to delete this subcategory? This action cannot be undone."
       />
     </div>
   );
 };
 
-export default CustomerMasterPage;
+export default SubcategoryMasterPage;

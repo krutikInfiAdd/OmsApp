@@ -1,4 +1,4 @@
-import { User } from '../types';
+import { User, UserRole } from '../types';
 import { mockCompanies } from './mockData';
 
 // In a real app, passwords should be securely hashed.
@@ -10,6 +10,7 @@ export let mockUsers: User[] = [
     email: 'admin@zenith.com',
     password: 'password123',
     companyId: mockCompanies[0].id,
+    role: UserRole.Admin,
   },
   {
     id: 'U002',
@@ -17,6 +18,7 @@ export let mockUsers: User[] = [
     email: 'jane@globaltech.com',
     password: 'password456',
     companyId: mockCompanies[1].id,
+    role: UserRole.Sales,
   },
 ];
 
@@ -27,4 +29,8 @@ export const addUser = (user: Omit<User, 'id'>): User => {
   };
   mockUsers.push(newUser);
   return newUser;
+};
+
+export const setMockUsers = (newUsers: User[]) => {
+  mockUsers = newUsers;
 };

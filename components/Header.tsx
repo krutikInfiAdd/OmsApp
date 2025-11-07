@@ -4,7 +4,7 @@ import { ChevronDownIcon } from './icons/ChevronDownIcon';
 import { MenuIcon } from './icons/MenuIcon';
 import { ThemeToggler } from './ThemeToggler';
 import { useAuth } from '../contexts/AuthContext';
-import { mockCompanies } from '../data/mockData';
+import { useData } from '../contexts/DataContext';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -12,14 +12,15 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user, signOut } = useAuth();
+  const { companies } = useData();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [userCompany, setUserCompany] = useState('');
 
   useEffect(() => {
-    const company = mockCompanies.find(c => c.id === user?.companyId);
+    const company = companies.find(c => c.id === user?.companyId);
     setUserCompany(company?.name || 'Unknown Company');
-  }, [user]);
+  }, [user, companies]);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -33,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   }, []);
 
   return (
-    <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <header className="flex items-center justify-between px-4 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center">
         <button
           onClick={onMenuClick}
