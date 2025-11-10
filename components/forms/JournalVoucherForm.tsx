@@ -3,6 +3,10 @@ import { JournalVoucher, JournalVoucherEntry, Account } from '../../types';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { TrashIcon } from '../icons/TrashIcon';
+import { Textarea } from '../ui/Textarea';
+import { CalendarIcon } from '../icons/CalendarIcon';
+import { CurrencyRupeeIcon } from '../icons/CurrencyRupeeIcon';
+import { DocumentTextIcon } from '../icons/DocumentTextIcon';
 
 interface JournalVoucherFormProps {
   voucher: Partial<JournalVoucher> | null;
@@ -95,7 +99,7 @@ export const JournalVoucherForm: React.FC<JournalVoucherFormProps> = ({ voucher,
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-          <Input type="date" name="date" id="date" value={formData.date || ''} onChange={handleChange} required className="mt-1" />
+          <Input type="date" name="date" id="date" value={formData.date || ''} onChange={handleChange} required className="mt-1" icon={<CalendarIcon />} />
         </div>
       </div>
 
@@ -115,10 +119,10 @@ export const JournalVoucherForm: React.FC<JournalVoucherFormProps> = ({ voucher,
                 </select>
               </div>
               <div className="col-span-3">
-                <Input type="number" placeholder="Debit" value={entry.debit || ''} onChange={e => handleEntryChange(index, 'debit', e.target.value)} min="0" step="0.01" />
+                <Input type="number" placeholder="Debit" value={entry.debit || ''} onChange={e => handleEntryChange(index, 'debit', e.target.value)} min="0" step="0.01" icon={<CurrencyRupeeIcon />} />
               </div>
               <div className="col-span-3">
-                <Input type="number" placeholder="Credit" value={entry.credit || ''} onChange={e => handleEntryChange(index, 'credit', e.target.value)} min="0" step="0.01" />
+                <Input type="number" placeholder="Credit" value={entry.credit || ''} onChange={e => handleEntryChange(index, 'credit', e.target.value)} min="0" step="0.01" icon={<CurrencyRupeeIcon />} />
               </div>
               <div className="col-span-1">
                 {formData.entries && formData.entries.length > 2 && (
@@ -151,14 +155,15 @@ export const JournalVoucherForm: React.FC<JournalVoucherFormProps> = ({ voucher,
 
       <div>
         <label htmlFor="narration" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Narration</label>
-        <textarea
+        <Textarea
           name="narration"
           id="narration"
           value={formData.narration || ''}
           onChange={handleChange}
           required
           rows={3}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+          className="mt-1"
+          icon={<DocumentTextIcon />}
         />
       </div>
 

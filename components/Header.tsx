@@ -5,6 +5,7 @@ import { MenuIcon } from './icons/MenuIcon';
 import { ThemeToggler } from './ThemeToggler';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
+import { Input } from './ui/Input';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -44,13 +45,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <MenuIcon className="h-6 w-6" />
         </button>
         <div className="relative w-full max-w-xs sm:max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <SearchIcon className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
+           <Input
             type="text"
             placeholder="Search transactions, customers..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg bg-gray-100 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            icon={<SearchIcon />}
+            className="w-full bg-gray-100 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
       </div>

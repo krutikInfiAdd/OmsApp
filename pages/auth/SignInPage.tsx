@@ -3,6 +3,8 @@ import { NavLink, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { MailIcon } from '../../components/icons/MailIcon';
+import { LockClosedIcon } from '../../components/icons/LockClosedIcon';
 
 const SignInPage: React.FC = () => {
   const [email, setEmail] = useState('admin@zenith.com');
@@ -51,6 +53,7 @@ const SignInPage: React.FC = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              icon={<MailIcon />}
             />
           </div>
         </div>
@@ -67,6 +70,7 @@ const SignInPage: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              icon={<LockClosedIcon />}
             />
           </div>
         </div>

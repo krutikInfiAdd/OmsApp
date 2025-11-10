@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { CreditDebitNote, CreditDebitNoteType, Customer } from '../../types';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { Textarea } from '../ui/Textarea';
+import { CalendarIcon } from '../icons/CalendarIcon';
+import { CurrencyRupeeIcon } from '../icons/CurrencyRupeeIcon';
+import { DocumentTextIcon } from '../icons/DocumentTextIcon';
 
 interface CreditDebitNoteFormProps {
   note: Partial<CreditDebitNote> | null;
@@ -64,7 +68,7 @@ export const CreditDebitNoteForm: React.FC<CreditDebitNoteFormProps> = ({ note, 
         </div>
         <div>
           <label htmlFor="issueDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Issue Date</label>
-          <Input type="date" name="issueDate" id="issueDate" value={formData.issueDate || ''} onChange={handleChange} required className="mt-1" />
+          <Input type="date" name="issueDate" id="issueDate" value={formData.issueDate || ''} onChange={handleChange} required className="mt-1" icon={<CalendarIcon />} />
         </div>
       </div>
       
@@ -85,20 +89,21 @@ export const CreditDebitNoteForm: React.FC<CreditDebitNoteFormProps> = ({ note, 
         </div>
          <div>
           <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount (INR)</label>
-          <Input type="number" name="amount" id="amount" value={formData.amount === 0 ? '' : formData.amount} onChange={handleChange} required className="mt-1" placeholder="0.00" min="0.01" step="0.01" />
+          <Input type="number" name="amount" id="amount" value={formData.amount === 0 ? '' : formData.amount} onChange={handleChange} required className="mt-1" placeholder="0.00" min="0.01" step="0.01" icon={<CurrencyRupeeIcon />} />
         </div>
       </div>
 
       <div>
         <label htmlFor="reason" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Reason</label>
-        <textarea
+        <Textarea
           name="reason"
           id="reason"
           value={formData.reason || ''}
           onChange={handleChange}
           required
           rows={3}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+          className="mt-1"
+          icon={<DocumentTextIcon />}
         />
       </div>
 

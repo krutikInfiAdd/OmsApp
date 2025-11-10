@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { User, UserRole, Company } from '../../types';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { UserIcon } from '../icons/UserIcon';
+import { MailIcon } from '../icons/MailIcon';
+import { LockClosedIcon } from '../icons/LockClosedIcon';
 
 interface UserFormProps {
   user: Partial<User> | null;
@@ -53,13 +56,13 @@ export const UserForm: React.FC<UserFormProps> = ({ user, companies, onSave, onC
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Full Name
           </label>
-          <Input type="text" name="name" id="name" value={formData.name || ''} onChange={handleChange} required className="mt-1" />
+          <Input type="text" name="name" id="name" value={formData.name || ''} onChange={handleChange} required className="mt-1" icon={<UserIcon />} />
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Email
           </label>
-          <Input type="email" name="email" id="email" value={formData.email || ''} onChange={handleChange} required className="mt-1" />
+          <Input type="email" name="email" id="email" value={formData.email || ''} onChange={handleChange} required className="mt-1" icon={<MailIcon />} />
         </div>
       </div>
 
@@ -111,6 +114,7 @@ export const UserForm: React.FC<UserFormProps> = ({ user, companies, onSave, onC
           required={!isEditing}
           className="mt-1" 
           placeholder={isEditing ? 'Leave blank to keep current password' : 'Enter password'}
+          icon={<LockClosedIcon />}
         />
       </div>
 

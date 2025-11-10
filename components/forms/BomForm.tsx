@@ -3,6 +3,7 @@ import { BOM, BOMItem, Product } from '../../types';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { TrashIcon } from '../icons/TrashIcon';
+import { CubeIcon } from '../icons/CubeIcon';
 
 interface BomFormProps {
   bom?: BOM | null;
@@ -123,6 +124,7 @@ export const BomForm: React.FC<BomFormProps> = ({ bom, products, onSave, onCance
                                 min="0.01"
                                 step="0.01"
                                 className="w-32"
+                                icon={<CubeIcon />}
                             />
                             {items.length > 1 && (
                                 <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveItem(index)} className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50">

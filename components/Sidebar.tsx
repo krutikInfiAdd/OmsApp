@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         <div key={item.label}>
           <button
             onClick={() => toggleMenu(item.label)}
-            className={`w-full flex items-center justify-between px-4 py-2.5 text-sm text-left rounded-lg transition-colors duration-200 hover:bg-gray-200 dark:hover:bg-gray-700 ${
+            className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left rounded-lg transition-colors duration-200 hover:bg-gray-200 dark:hover:bg-gray-700 ${
               isParentActive ? 'font-semibold text-primary-600 dark:text-primary-400' : 'font-medium text-gray-600 dark:text-gray-300'
             }`}
           >
@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         key={item.label}
         to={item.path || '/'}
         className={({ isActive }) =>
-          `flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
+          `flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
             isActive
               ? 'bg-primary-500 text-white'
               : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       <div className="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <NavLink to="/" className="text-xl font-bold text-primary-600 dark:text-primary-400">PrimeLedger</NavLink>
       </div>
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
         {NAVIGATION_LINKS.map(renderNavItem)}
       </nav>
     </>

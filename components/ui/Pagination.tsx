@@ -29,7 +29,7 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages,
   };
 
   return (
-    <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+    <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6 print:hidden">
       <div className="flex-1 flex justify-between sm:hidden">
         <Button variant="outline" onClick={handlePrevious} disabled={currentPage === 1}>
           Previous

@@ -3,6 +3,9 @@ import { NavLink, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { UserIcon } from '../../components/icons/UserIcon';
+import { MailIcon } from '../../components/icons/MailIcon';
+import { LockClosedIcon } from '../../components/icons/LockClosedIcon';
 
 const SignUpPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -50,7 +53,7 @@ const SignUpPage: React.FC = () => {
             Full Name
           </label>
           <div className="mt-1">
-            <Input id="name" name="name" type="text" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} />
+            <Input id="name" name="name" type="text" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} icon={<UserIcon />} />
           </div>
         </div>
         <div>
@@ -58,7 +61,7 @@ const SignUpPage: React.FC = () => {
             Email address
           </label>
           <div className="mt-1">
-            <Input id="email" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="email" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} icon={<MailIcon />} />
           </div>
         </div>
         <div>
@@ -66,7 +69,7 @@ const SignUpPage: React.FC = () => {
             Password
           </label>
           <div className="mt-1">
-            <Input id="password" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input id="password" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} icon={<LockClosedIcon />} />
           </div>
         </div>
          <div>
@@ -74,7 +77,7 @@ const SignUpPage: React.FC = () => {
             Confirm Password
           </label>
           <div className="mt-1">
-            <Input id="confirm-password" name="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            <Input id="confirm-password" name="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} icon={<LockClosedIcon />} />
           </div>
         </div>
         <div>

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Product, ProductUnit, Category, Subcategory, Tax } from '../../types';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { ProductIcon } from '../icons/ProductIcon';
+import { HashtagIcon } from '../icons/HashtagIcon';
+import { CurrencyRupeeIcon } from '../icons/CurrencyRupeeIcon';
 
 interface ProductFormProps {
   product: Partial<Product> | null;
@@ -75,13 +78,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Product Name
           </label>
-          <Input type="text" name="name" id="name" value={formData.name || ''} onChange={handleChange} required className="mt-1" />
+          <Input type="text" name="name" id="name" value={formData.name || ''} onChange={handleChange} required className="mt-1" icon={<ProductIcon />} />
         </div>
         <div>
           <label htmlFor="code" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Product Code
           </label>
-          <Input type="text" name="code" id="code" value={formData.code || ''} onChange={handleChange} required className="mt-1" />
+          <Input type="text" name="code" id="code" value={formData.code || ''} onChange={handleChange} required className="mt-1" icon={<HashtagIcon />} />
         </div>
       </div>
       
@@ -90,7 +93,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
           <label htmlFor="hsnCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             HSN/SAC Code
           </label>
-          <Input type="text" name="hsnCode" id="hsnCode" value={formData.hsnCode || ''} onChange={handleChange} required className="mt-1" />
+          <Input type="text" name="hsnCode" id="hsnCode" value={formData.hsnCode || ''} onChange={handleChange} required className="mt-1" icon={<HashtagIcon />} />
         </div>
         <div>
           <label htmlFor="unit" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -148,7 +151,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
           <label htmlFor="rate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Rate (INR)
           </label>
-          <Input type="number" name="rate" id="rate" value={formData.rate === 0 ? '' : formData.rate} onChange={handleChange} required className="mt-1" placeholder="0.00" />
+          <Input type="number" name="rate" id="rate" value={formData.rate === 0 ? '' : formData.rate} onChange={handleChange} required className="mt-1" placeholder="0.00" icon={<CurrencyRupeeIcon />} />
         </div>
         <div>
            <label htmlFor="taxId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">

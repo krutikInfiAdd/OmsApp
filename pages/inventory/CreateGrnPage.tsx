@@ -6,6 +6,8 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { ArrowLeftIcon } from '../../components/icons/ArrowLeftIcon';
+import { CalendarIcon } from '../../components/icons/CalendarIcon';
+import { CubeIcon } from '../../components/icons/CubeIcon';
 
 const CreateGrnPage: React.FC = () => {
     const { purchaseOrderId } = useParams<{ purchaseOrderId: string }>();
@@ -89,7 +91,7 @@ const CreateGrnPage: React.FC = () => {
                     </div>
                      <div>
                         <label htmlFor="grnDate" className="font-semibold text-gray-500 dark:text-gray-400">GRN Date</label>
-                        <Input type="date" id="grnDate" value={grnDate} onChange={e => setGrnDate(e.target.value)} />
+                        <Input type="date" id="grnDate" value={grnDate} onChange={e => setGrnDate(e.target.value)} icon={<CalendarIcon />} />
                     </div>
                 </div>
             </Card>
@@ -116,6 +118,7 @@ const CreateGrnPage: React.FC = () => {
                                       value={item.receivedQuantity}
                                       onChange={e => handleItemChange(index, e.target.value)}
                                       min="0"
+                                      icon={<CubeIcon />}
                                     />
                                </td>
                              </tr>

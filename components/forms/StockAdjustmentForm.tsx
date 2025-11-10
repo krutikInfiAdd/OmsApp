@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Product } from '../../types';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { CubeIcon } from '../icons/CubeIcon';
 
 interface StockAdjustmentFormProps {
   product: Product;
@@ -40,6 +41,7 @@ export const StockAdjustmentForm: React.FC<StockAdjustmentFormProps> = ({ produc
           required
           className="mt-1"
           min="0"
+          icon={<CubeIcon />}
         />
       </div>
       <div className="flex justify-end space-x-3 pt-4">

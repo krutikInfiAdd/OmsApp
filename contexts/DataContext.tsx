@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
-import { Invoice, Customer, Product, Company, Supplier, Vendor, Category, Subcategory, Tax, User, UserRole, SalesOrder, PurchaseOrder, SalesOrderStatus, PurchaseOrderStatus, Quotation, QuotationStatus, CreditDebitNote, CreditDebitNoteStatus, CreditDebitNoteType, JournalVoucher, Account, BankStatementTransaction, GRN, GRNStatus, BOM, BOMItem } from '../types';
-import { mockInvoices, mockCustomers, mockProducts, mockCompanies, mockSuppliers, mockVendors, mockCategories, mockSubcategories, mockTaxes, mockSalesOrders, mockPurchaseOrders, mockQuotations, mockCreditDebitNotes, mockJournalVouchers, mockChartOfAccounts, mockBankStatementTransactions, mockGrns, mockBoms } from '../data/mockData';
+import { Invoice, Customer, Product, Company, Supplier, Vendor, Category, Subcategory, Tax, User, UserRole, SalesOrder, PurchaseOrder, SalesOrderStatus, PurchaseOrderStatus, Quotation, QuotationStatus, CreditDebitNote, CreditDebitNoteStatus, CreditDebitNoteType, JournalVoucher, Account, BankStatementTransaction, GRN, GRNStatus, BOM, BOMItem, AccountType, JournalVoucherEntry, ProductionOrder, ProductionOrderStatus } from '../types';
+import { mockInvoices, mockCustomers, mockProducts, mockCompanies, mockSuppliers, mockVendors, mockCategories, mockSubcategories, mockTaxes, mockSalesOrders, mockPurchaseOrders, mockQuotations, mockCreditDebitNotes, mockJournalVouchers, mockChartOfAccounts, mockBankStatementTransactions, mockGrns, mockBoms, mockProductionOrders } from '../data/mockData';
 import { mockUsers as initialUsers, setMockUsers } from '../data/users';
 
 interface DataContextType {
@@ -23,6 +23,7 @@ interface DataContextType {
   bankStatementTransactions: BankStatementTransaction[];
   grns: GRN[];
   boms: BOM[];
+  productionOrders: ProductionOrder[];
   addInvoice: (invoice: Invoice) => void;
   addCustomer: (customerData: Partial<Customer>) => void;
   updateCustomer: (customerId: string, customerData: Partial<Customer>) => void;
@@ -67,6 +68,9 @@ interface DataContextType {
   addBom: (bomData: Partial<BOM>) => void;
   updateBom: (bomId: string, bomData: Partial<BOM>) => void;
   deleteBom: (bomId: string) => void;
+  performYearEndClosing: (year: number) => void;
+  addProductionOrder: (orderData: Partial<ProductionOrder>) => void;
+  updateProductionOrderStatus: (orderId: string, newStatus: ProductionOrderStatus, actualQty?: number) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -91,6 +95,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [bankStatementTransactions, setBankStatementTransactions] = useState<BankStatementTransaction[]>(mockBankStatementTransactions);
   const [grns, setGrns] = useState<GRN[]>(mockGrns);
   const [boms, setBoms] = useState<BOM[]>(mockBoms);
+  const [productionOrders, setProductionOrders] = useState<ProductionOrder[]>(mockProductionOrders);
 
 
   const addInvoice = useCallback((invoice: Invoice) => {
@@ -320,13 +325,181 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const deleteBom = useCallback((bomId: string) => {
     setBoms(prev => prev.filter(b => b.id !== bomId));
   }, []);
+  
+  // Production Order Actions
+  const addProductionOrder = useCallback((orderData: Partial<ProductionOrder>) => {
+    const newOrder: ProductionOrder = {
+        id: `PROD${Date.now()}`,
+        orderNumber: `PROD-2024-${String(productionOrders.length + 1).padStart(3, '0')}`,
+        status: ProductionOrderStatus.Planned,
+        ...orderData,
+    } as ProductionOrder;
+    setProductionOrders(prev => [...prev, newOrder]);
+  }, [productionOrders.length]);
+
+  const updateProductionOrderStatus = useCallback((orderId: string, newStatus: ProductionOrderStatus, actualQty?: number) => {
+    setProductionOrders(prevOrders => {
+        const order = prevOrders.find(o => o.id === orderId);
+        if (!order) return prevOrders;
+
+        const bom = boms.find(b => b.id === order.bomId);
+        if (!bom) {
+            console.error("BOM not found for production order");
+            return prevOrders;
+        }
+
+        // Logic for inventory updates
+        if (order.status === ProductionOrderStatus.Planned && newStatus === ProductionOrderStatus.InProgress) {
+            // Deduct components from stock
+            let canProceed = true;
+            const stockUpdates: {productId: string, newStock: number}[] = [];
+
+            bom.items.forEach(component => {
+                const requiredQty = component.quantity * order.quantityToProduce;
+                const componentProduct = products.find(p => p.id === component.product.id);
+                if (!componentProduct || componentProduct.stock < requiredQty) {
+                    alert(`Not enough stock for ${component.product.name}. Required: ${requiredQty}, Available: ${componentProduct?.stock || 0}`);
+                    canProceed = false;
+                } else {
+                    stockUpdates.push({ productId: component.product.id, newStock: componentProduct.stock - requiredQty });
+                }
+            });
+
+            if (!canProceed) return prevOrders; // Don't update status if stock is insufficient
+
+            // Apply stock updates
+            setProducts(currentProducts => {
+                let updatedProducts = [...currentProducts];
+                stockUpdates.forEach(update => {
+                    updatedProducts = updatedProducts.map(p => p.id === update.productId ? {...p, stock: update.newStock} : p);
+                });
+                return updatedProducts;
+            });
+        } else if (order.status === ProductionOrderStatus.InProgress && newStatus === ProductionOrderStatus.Completed) {
+            // Add finished good to stock
+            const finishedProduct = products.find(p => p.id === bom.product.id);
+            const quantityProduced = actualQty !== undefined ? actualQty : order.quantityToProduce;
+
+            if (finishedProduct) {
+                updateProductStock(finishedProduct.id, finishedProduct.stock + quantityProduced);
+            }
+        }
+        
+        // Update the order status
+        return prevOrders.map(o => o.id === orderId ? { ...o, status: newStatus, ...(actualQty !== undefined && { actualQuantityProduced: actualQty }) } as ProductionOrder : o);
+    });
+  }, [boms, products, updateProductStock]);
+
+  const performYearEndClosing = useCallback((year: number) => {
+    const retainedEarningsAccount = chartOfAccounts.find(acc => acc.name === 'Retained Earnings');
+    if (!retainedEarningsAccount) {
+        alert('"Retained Earnings" account not found. Cannot perform year-end closing.');
+        return;
+    }
+
+    const yearEnd = `${year}-12-31`;
+    const relevantVouchers = journalVouchers.filter(jv => jv.date.startsWith(year.toString()));
+    const balances = new Map<string, number>();
+    chartOfAccounts.forEach(acc => balances.set(acc.id, 0));
+
+    relevantVouchers.forEach(voucher => {
+        voucher.entries.forEach(entry => {
+            const account = chartOfAccounts.find(acc => acc.id === entry.accountId);
+            if (account) {
+                const currentBalance = balances.get(entry.accountId) || 0;
+                let newBalance = currentBalance;
+                if ([AccountType.Asset, AccountType.Expense].includes(account.type)) {
+                    newBalance += entry.debit - entry.credit;
+                } else {
+                    newBalance += entry.credit - entry.debit;
+                }
+                balances.set(entry.accountId, newBalance);
+            }
+        });
+    });
+
+    const closingEntries: JournalVoucherEntry[] = [];
+    let netProfit = 0;
+    balances.forEach((balance, accountId) => {
+        const account = chartOfAccounts.find(acc => acc.id === accountId);
+        if (account && balance !== 0) {
+            if (account.type === AccountType.Income) {
+                closingEntries.push({ accountId, debit: balance, credit: 0 });
+                netProfit += balance;
+            } else if (account.type === AccountType.Expense) {
+                closingEntries.push({ accountId, debit: 0, credit: balance });
+                netProfit -= balance;
+            }
+        }
+    });
+
+    if (netProfit > 0) {
+        closingEntries.push({ accountId: retainedEarningsAccount.id, debit: 0, credit: netProfit });
+    } else if (netProfit < 0) {
+        closingEntries.push({ accountId: retainedEarningsAccount.id, debit: Math.abs(netProfit), credit: 0 });
+    }
+
+    const closingVoucherData: Partial<JournalVoucher> = {
+        date: yearEnd,
+        narration: `Closing entries for ${year}. Transferring net profit/loss to Retained Earnings.`,
+        entries: closingEntries,
+    };
+    
+    // We create the new voucher object first
+    const closingVoucher: JournalVoucher = {
+        id: `JV${Date.now()}`,
+        voucherNumber: `JV-${year}-CLOSE`,
+        ...closingVoucherData,
+    } as JournalVoucher;
+
+    // Update balances based on this new closing voucher before calculating opening balances
+    closingVoucher.entries.forEach(entry => {
+        const account = chartOfAccounts.find(acc => acc.id === entry.accountId);
+        if(account) {
+             const currentBalance = balances.get(entry.accountId) || 0;
+             let newBalance = currentBalance;
+             if ([AccountType.Asset, AccountType.Expense].includes(account.type)) {
+                newBalance += entry.debit - entry.credit;
+             } else {
+                newBalance += entry.credit - entry.debit;
+             }
+             balances.set(entry.accountId, newBalance);
+        }
+    });
+
+    const openingEntries: JournalVoucherEntry[] = [];
+    balances.forEach((balance, accountId) => {
+        const account = chartOfAccounts.find(acc => acc.id === accountId);
+        if (account && Math.abs(balance) > 0.001) { // Check for non-zero balances
+            if (account.type === AccountType.Asset) {
+                openingEntries.push({ accountId, debit: balance, credit: 0 });
+            } else if ([AccountType.Liability, AccountType.Equity].includes(account.type)) {
+                openingEntries.push({ accountId, debit: 0, credit: balance });
+            }
+        }
+    });
+
+    const openingVoucher: Partial<JournalVoucher> = {
+        date: `${year + 1}-01-01`,
+        narration: `Opening balance entries for the year ${year + 1}.`,
+        entries: openingEntries,
+    };
+
+    // Add both vouchers to state at once
+    setJournalVouchers(prev => [...prev, closingVoucher, {
+      id: `JV${Date.now()+1}`,
+      voucherNumber: `JV-${year+1}-OPEN`,
+      ...openingVoucher
+    } as JournalVoucher]);
+    
+}, [journalVouchers, chartOfAccounts]);
 
 
   return (
     <DataContext.Provider value={{ 
         invoices, customers, products, companies, suppliers, vendors, categories, subcategories, taxes, users,
         salesOrders, purchaseOrders, quotations, creditDebitNotes, journalVouchers, chartOfAccounts, bankStatementTransactions,
-        grns, boms,
+        grns, boms, productionOrders,
         addInvoice, addSalesOrder, addPurchaseOrder,
         addQuotation, updateQuotation, deleteQuotation,
         addCreditDebitNote, updateCreditDebitNote, deleteCreditDebitNote,
@@ -343,6 +516,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addUser, updateUser, deleteUser,
         addGrn,
         addBom, updateBom, deleteBom,
+        performYearEndClosing,
+        addProductionOrder, updateProductionOrderStatus
     }}>
       {children}
     </DataContext.Provider>

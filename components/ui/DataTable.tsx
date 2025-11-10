@@ -6,6 +6,7 @@ import { Pagination } from './Pagination';
 import { SwitchVerticalIcon } from '../icons/SwitchVerticalIcon';
 import { ArrowUpIcon } from '../icons/ArrowUpIcon';
 import { ArrowDownIcon } from '../icons/ArrowDownIcon';
+import { SearchIcon } from '../icons/SearchIcon';
 
 interface DataTableProps<T extends { id: any }> {
   columns: Column<T>[];
@@ -47,12 +48,13 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-      <div className="p-4 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+      <div className="p-4 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0 print:hidden">
         <Input
           type="text"
           placeholder={searchPlaceholder}
           value={searchTerm}
           onChange={handleSearch}
+          icon={<SearchIcon />}
           className="w-full sm:w-auto sm:max-w-xs"
         />
       </div>

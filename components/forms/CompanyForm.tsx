@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Company } from '../../types';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { Textarea } from '../ui/Textarea';
+import { UserIcon } from '../icons/UserIcon';
+import { MailIcon } from '../icons/MailIcon';
+import { PhoneIcon } from '../icons/PhoneIcon';
+import { LocationMarkerIcon } from '../icons/LocationMarkerIcon';
+import { IdentificationIcon } from '../icons/IdentificationIcon';
 
 interface CompanyFormProps {
   company: Partial<Company> | null;
@@ -53,20 +59,22 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({ company, onSave, onCan
           onChange={handleChange}
           required
           className="mt-1"
+          icon={<UserIcon />}
         />
       </div>
        <div>
         <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Address
         </label>
-        <textarea
+        <Textarea
           name="address"
           id="address"
           value={formData.address || ''}
           onChange={handleChange}
           required
           rows={3}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+          className="mt-1"
+          icon={<LocationMarkerIcon />}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -82,6 +90,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({ company, onSave, onCan
             onChange={handleChange}
             required
             className="mt-1"
+            icon={<MailIcon />}
           />
         </div>
         <div>
@@ -96,6 +105,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({ company, onSave, onCan
             onChange={handleChange}
             required
             className="mt-1"
+            icon={<PhoneIcon />}
           />
         </div>
       </div>
@@ -112,6 +122,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({ company, onSave, onCan
             onChange={handleChange}
             required
             className="mt-1"
+            icon={<LocationMarkerIcon />}
           />
         </div>
         <div>
@@ -126,6 +137,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({ company, onSave, onCan
             onChange={handleChange}
             required
             className="mt-1"
+            icon={<LocationMarkerIcon />}
           />
         </div>
       </div>
@@ -144,6 +156,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({ company, onSave, onCan
             className="mt-1"
             minLength={15}
             maxLength={15}
+            icon={<IdentificationIcon />}
             />
         </div>
         <div>
@@ -160,6 +173,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({ company, onSave, onCan
             className="mt-1"
             minLength={10}
             maxLength={10}
+            icon={<IdentificationIcon />}
             />
         </div>
       </div>

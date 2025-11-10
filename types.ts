@@ -364,3 +364,21 @@ export interface BOM {
   items: BOMItem[];
   creationDate: string;
 }
+
+export enum ProductionOrderStatus {
+  Planned = 'Planned',
+  InProgress = 'In Progress',
+  Completed = 'Completed',
+  Cancelled = 'Cancelled',
+}
+
+export interface ProductionOrder {
+  id: string;
+  orderNumber: string;
+  bomId: string;
+  quantityToProduce: number;
+  orderDate: string;
+  expectedCompletionDate: string;
+  status: ProductionOrderStatus;
+  actualQuantityProduced?: number;
+}

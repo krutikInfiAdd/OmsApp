@@ -4,11 +4,11 @@ import { BOM, Column } from '../../types';
 import { useData } from '../../contexts/DataContext';
 import { DataTable } from '../../components/ui/DataTable';
 import { Button } from '../../components/ui/Button';
-import { Modal } from '../../components/ui/Modal';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
+import { EyeIcon } from '../../components/icons/EyeIcon';
 
 const BomPage: React.FC = () => {
   const { boms, deleteBom } = useData();
@@ -36,6 +36,11 @@ const BomPage: React.FC = () => {
       header: 'Actions',
       accessor: (row: BOM) => (
         <div className="flex space-x-1">
+          <Tooltip text="View">
+            <NavLink to={`/production/bom/view/${row.id}`} className="inline-flex items-center justify-center p-1.5 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              <EyeIcon className="h-4 w-4" />
+            </NavLink>
+          </Tooltip>
           <Tooltip text="Edit">
             <NavLink to={`/production/bom/edit/${row.id}`} className="inline-flex items-center justify-center p-1.5 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
               <PencilIcon className="h-4 w-4" />

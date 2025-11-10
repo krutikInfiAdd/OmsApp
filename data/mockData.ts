@@ -1,4 +1,4 @@
-import { Customer, Product, Invoice, InvoiceStatus, InvoiceItem, Company, Supplier, Vendor, Category, Subcategory, Tax, TaxType, SalesOrder, SalesOrderStatus, PurchaseOrder, PurchaseOrderStatus, Quotation, QuotationStatus, CreditDebitNote, CreditDebitNoteType, CreditDebitNoteStatus, Account, AccountType, JournalVoucher, BankStatementTransaction, GRN, GRNStatus, BOM } from '../types';
+import { Customer, Product, Invoice, InvoiceStatus, InvoiceItem, Company, Supplier, Vendor, Category, Subcategory, Tax, TaxType, SalesOrder, SalesOrderStatus, PurchaseOrder, PurchaseOrderStatus, Quotation, QuotationStatus, CreditDebitNote, CreditDebitNoteType, CreditDebitNoteStatus, Account, AccountType, JournalVoucher, BankStatementTransaction, GRN, GRNStatus, BOM, ProductionOrder, ProductionOrderStatus } from '../types';
 
 export const mockCompanies: Company[] = [
   {
@@ -589,6 +589,7 @@ export const mockChartOfAccounts: Account[] = [
   { id: 'ACC102', name: 'Unearned Revenue', type: AccountType.Liability },
   { id: 'ACC103', name: 'Loans Payable', type: AccountType.Liability },
   { id: 'ACC151', name: 'Capital Account', type: AccountType.Equity },
+  { id: 'ACC152', name: 'Retained Earnings', type: AccountType.Equity },
   { id: 'ACC201', name: 'Sales Revenue', type: AccountType.Income },
   { id: 'ACC202', name: 'Service Revenue', type: AccountType.Income },
   { id: 'ACC301', name: 'Rent Expense', type: AccountType.Expense },
@@ -699,6 +700,28 @@ export const mockBoms: BOM[] = [
       { product: mockProducts.find(p => p.id === 'P017')!, quantity: 2 },
     ]
   }
+];
+
+export const mockProductionOrders: ProductionOrder[] = [
+  {
+    id: 'PROD001',
+    orderNumber: 'PROD-2024-001',
+    bomId: 'BOM001',
+    quantityToProduce: 5,
+    orderDate: '2024-07-22',
+    expectedCompletionDate: '2024-07-29',
+    status: ProductionOrderStatus.Completed,
+    actualQuantityProduced: 5,
+  },
+  {
+    id: 'PROD002',
+    orderNumber: 'PROD-2024-002',
+    bomId: 'BOM001',
+    quantityToProduce: 10,
+    orderDate: '2024-07-28',
+    expectedCompletionDate: '2024-08-05',
+    status: ProductionOrderStatus.Planned,
+  },
 ];
 
 export const dashboardMetrics = {

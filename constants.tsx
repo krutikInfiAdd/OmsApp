@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { NavItem } from './types';
 import { HomeIcon } from './components/icons/HomeIcon';
@@ -35,6 +33,7 @@ export const NAVIGATION_LINKS: NavItem[] = [
     children: [
       { label: 'Stock Management', path: '/inventory/stock', icon: () => null },
       { label: 'Goods Received (GRN)', path: '/inventory/grn', icon: () => null },
+      { label: 'Stock Valuation', path: '/inventory/valuation', icon: () => null },
     ],
   },
   {
@@ -51,6 +50,7 @@ export const NAVIGATION_LINKS: NavItem[] = [
     icon: InventoryIcon,
     children: [
       { label: 'Bill of Materials', path: '/production/bom', icon: () => null },
+      { label: 'Production Orders', path: '/production/orders', icon: () => null },
     ],
   },
     {
@@ -60,6 +60,8 @@ export const NAVIGATION_LINKS: NavItem[] = [
       { label: 'Journal Vouchers', path: '/accounting/journal', icon: () => null },
       { label: 'Credit/Debit Notes', path: '/accounting/credit-debit-notes', icon: () => null },
       { label: 'Balance Sheet', path: '/accounting/balance-sheet', icon: () => null },
+      { label: 'Profit & Loss', path: '/accounting/profit-loss', icon: () => null },
+      { label: 'Year-End Closing', path: '/accounting/year-end-closing', icon: () => null },
     ],
   },
   {

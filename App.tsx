@@ -43,6 +43,13 @@ import CreateGrnPage from './pages/inventory/CreateGrnPage';
 import BomPage from './pages/production/BomPage';
 import CreateBomPage from './pages/production/CreateBomPage';
 import EditBomPage from './pages/production/EditBomPage';
+import ProfitAndLossPage from './pages/accounting/ProfitAndLossPage';
+import YearEndClosingPage from './pages/accounting/YearEndClosingPage';
+import StockValuationPage from './pages/inventory/StockValuationPage';
+import ProductionOrdersPage from './pages/production/ProductionOrdersPage';
+import CreateProductionOrderPage from './pages/production/CreateProductionOrderPage';
+import ProductionOrderViewPage from './pages/production/ProductionOrderViewPage';
+import BomViewPage from './pages/production/BomViewPage';
 
 function App() {
   return (
@@ -72,15 +79,20 @@ function App() {
                   <Route path="/inventory/stock" element={<StockManagementPage />} />
                   <Route path="/inventory/grn" element={<GrnPage />} />
                   <Route path="/inventory/grn/new/:purchaseOrderId" element={<CreateGrnPage />} />
+                  <Route path="/inventory/valuation" element={<StockValuationPage />} />
                   <Route path="/products/master" element={<ProductMasterPage />} />
                   <Route path="/products/categories" element={<CategoryMasterPage />} />
                   <Route path="/products/subcategories" element={<SubcategoryMasterPage />} />
                   <Route path="/production/bom" element={<BomPage />} />
                   <Route path="/production/bom/new" element={<CreateBomPage />} />
                   <Route path="/production/bom/edit/:bomId" element={<EditBomPage />} />
+                  <Route path="/production/orders" element={<ProductionOrdersPage />} />
+                  <Route path="/production/orders/new" element={<CreateProductionOrderPage />} />
                   <Route path="/accounting/journal" element={<JournalVouchersPage />} />
                   <Route path="/accounting/credit-debit-notes" element={<CreditDebitNotesPage />} />
                   <Route path="/accounting/balance-sheet" element={<BalanceSheetPage />} />
+                  <Route path="/accounting/profit-loss" element={<ProfitAndLossPage />} />
+                  <Route path="/accounting/year-end-closing" element={<YearEndClosingPage />} />
                   <Route path="/reconciliation" element={<BankReconciliationPage />} />
                   <Route path="/gst/gstr1" element={<Gstr1Page />} />
                   <Route path="/reports/sales" element={<PlaceholderPage title="Sales Reports" />} />
@@ -97,6 +109,8 @@ function App() {
                 <Route path="/sales/invoices/view/:invoiceId" element={<InvoiceViewPage />} />
                 <Route path="/accounting/credit-debit-notes/view/:noteId" element={<CreditDebitNoteViewPage />} />
                 <Route path="/accounting/journal/view/:voucherId" element={<JournalVoucherViewPage />} />
+                <Route path="/production/orders/view/:orderId" element={<ProductionOrderViewPage />} />
+                <Route path="/production/bom/view/:bomId" element={<BomViewPage />} />
               </Route>
             </Routes>
           </AuthProvider>
