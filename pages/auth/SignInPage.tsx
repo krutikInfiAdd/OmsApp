@@ -7,8 +7,8 @@ import { MailIcon } from '../../components/icons/MailIcon';
 import { LockClosedIcon } from '../../components/icons/LockClosedIcon';
 
 const SignInPage: React.FC = () => {
-  const [email, setEmail] = useState('admin@zenith.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('SuperAdminInfi@yopmail.com');
+  const [password, setPassword] = useState('Adm!n123');
   const [error, setError] = useState<string | null>(null);
   const { signIn, isAuthenticated } = useAuth();
 

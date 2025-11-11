@@ -256,7 +256,6 @@ export const mockSuppliers: Supplier[] = [
   { id: 'SUP007', name: 'FastTrack Logistics', email: 'dispatch@fasttrack.log', gstin: '29AAACF7788G1Z1', pan: 'AAACF7788G', address: '44 Transport Nagar', city: 'Bangalore', state: 'Karnataka', country: 'India', phone: '9123498765' },
   { id: 'SUP008', name: 'Office Essentials Depot', email: 'orders@officedepot.in', gstin: '27AADCO9900H1Z2', pan: 'AADCO9900H', address: 'Fort, Fountain', city: 'Mumbai', state: 'Maharashtra', country: 'India', phone: '9555443322' },
   { id: 'SUP009', name: 'PowerUp Electricals', email: 'sales.pu@powerup.com', gstin: '19AABCP1212I1Z3', pan: 'AABCP1212I', address: 'Chandni Chowk Market', city: 'Kolkata', state: 'West Bengal', country: 'India', phone: '9876512345' },
-// Fix: Removed a stray underscore character that was causing a syntax error.
   { id: 'SUP010', name: 'GreenLeaf Paper Products', email: 'greenleaf@paper.com', gstin: '32AACCG3434J1Z4', pan: 'AACCG3434J', address: 'Edayar Industrial Zone', city: 'Kochi', state: 'Kerala', country: 'India', phone: '9988772233' },
   { id: 'SUP011', name: 'Machine Masters Inc.', email: 'mmi.service@machines.com', gstin: '08AADCM5656K1Z5', pan: 'AADCM5656K', address: 'Sitapura Industrial Area', city: 'Jaipur', state: 'Rajasthan', country: 'India', phone: '9123487654' },
   { id: 'SUP012', name: 'Uniform Universe', email: 'uniforms@universe.style', gstin: '09AABCU7878L1Z6', pan: 'AABCU7878L', address: 'Sector 62, Garment Hub', city: 'Noida', state: 'Uttar Pradesh', country: 'India', phone: '9555334411' },
@@ -415,6 +414,59 @@ export const mockInvoices: Invoice[] = [
     status: InvoiceStatus.Paid,
     items: [
       { product: mockProducts[5], quantity: 1, rate: 2500, tax: 12, total: 2800 }
+    ]
+  },
+  {
+    id: 'INV007',
+    invoiceNumber: '2024-007',
+    customer: mockCustomers[4],
+    issueDate: '2024-07-05',
+    dueDate: '2024-08-04',
+    amount: 7616,
+    status: InvoiceStatus.Paid,
+    items: [
+      { product: mockProducts[5], quantity: 2, rate: mockProducts[5].rate, tax: getTaxRateById(mockProducts[5].taxId), total: 5600 },
+      { product: mockProducts[11], quantity: 2, rate: mockProducts[11].rate, tax: getTaxRateById(mockProducts[11].taxId), total: 2016 },
+    ]
+  },
+  {
+    id: 'INV008',
+    invoiceNumber: '2024-008',
+    customer: mockCustomers[5],
+    issueDate: '2024-07-11',
+    dueDate: '2024-08-10',
+    amount: 47200,
+    status: InvoiceStatus.Pending,
+    items: [
+      { product: mockProducts[1], quantity: 4, rate: mockProducts[1].rate, tax: getTaxRateById(mockProducts[1].taxId), total: 40120 },
+      { product: mockProducts[6], quantity: 5, rate: mockProducts[6].rate, tax: getTaxRateById(mockProducts[6].taxId), total: 7080 },
+    ]
+  },
+  {
+    id: 'INV009',
+    invoiceNumber: '2024-009',
+    customer: mockCustomers[6],
+    issueDate: '2024-07-18',
+    dueDate: '2024-08-17',
+    amount: 203210,
+    status: InvoiceStatus.Paid,
+    items: [
+      { product: mockProducts[0], quantity: 1, rate: mockProducts[0].rate, tax: getTaxRateById(mockProducts[0].taxId), total: 112100 },
+      { product: mockProducts[1], quantity: 5, rate: mockProducts[1].rate, tax: getTaxRateById(mockProducts[1].taxId), total: 50150 },
+      { product: mockProducts[10], quantity: 1, rate: mockProducts[10].rate, tax: getTaxRateById(mockProducts[10].taxId), total: 40960 },
+    ]
+  },
+  {
+    id: 'INV010',
+    invoiceNumber: '2024-010',
+    customer: mockCustomers[7],
+    issueDate: '2024-07-26',
+    dueDate: '2024-08-25',
+    amount: 19015,
+    status: InvoiceStatus.Pending,
+    items: [
+      { product: mockProducts[5], quantity: 5, rate: mockProducts[5].rate, tax: getTaxRateById(mockProducts[5].taxId), total: 14000 },
+      { product: mockProducts[12], quantity: 5, rate: mockProducts[12].rate, tax: getTaxRateById(mockProducts[12].taxId), total: 5015 },
     ]
   },
 ];

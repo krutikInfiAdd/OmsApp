@@ -50,6 +50,7 @@ import ProductionOrdersPage from './pages/production/ProductionOrdersPage';
 import CreateProductionOrderPage from './pages/production/CreateProductionOrderPage';
 import ProductionOrderViewPage from './pages/production/ProductionOrderViewPage';
 import BomViewPage from './pages/production/BomViewPage';
+import SalesReportsPage from './pages/reports/SalesReportsPage';
 
 function App() {
   return (
@@ -95,7 +96,7 @@ function App() {
                   <Route path="/accounting/year-end-closing" element={<YearEndClosingPage />} />
                   <Route path="/reconciliation" element={<BankReconciliationPage />} />
                   <Route path="/gst/gstr1" element={<Gstr1Page />} />
-                  <Route path="/reports/sales" element={<PlaceholderPage title="Sales Reports" />} />
+                  <Route path="/reports/sales" element={<SalesReportsPage />} />
                   <Route path="/settings/company" element={<CompanyProfilePage />} />
                   <Route path="/settings/customers" element={<CustomerMasterPage />} />
                   <Route path="/settings/suppliers" element={<SupplierMasterPage />} />

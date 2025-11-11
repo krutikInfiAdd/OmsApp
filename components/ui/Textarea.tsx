@@ -12,7 +12,8 @@ export const Textarea: React.FC<TextareaProps> = ({ className = '', icon, ...pro
     return (
       <div className="relative">
         <div className="absolute top-3 left-0 pl-3 flex items-center pointer-events-none">
-           {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-gray-400" })}
+           {/* Fix: Explicitly provide a generic type to React.cloneElement to allow passing className. */}
+           {React.cloneElement<any>(icon as React.ReactElement, { className: "h-5 w-5 text-gray-400" })}
         </div>
         <textarea className={`${baseClasses} ${withIconClasses} ${className}`} {...props} />
       </div>
