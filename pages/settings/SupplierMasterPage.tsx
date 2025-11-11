@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Supplier, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -8,21 +8,37 @@ import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
-import { useData } from '../../contexts/DataContext';
+import { CreateSupplierApi, DeleteSupplierApi, GetSupplierApi, SupplierBaseDto, SupplierType, UpdateSupplierApi } from '@/apis/service/supplier';
 
 const SupplierMasterPage: React.FC = () => {
-  const { suppliers, addSupplier, updateSupplier, deleteSupplier } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [supplierToDelete, setSupplierToDelete] = useState<string | null>(null);
+  const [supplierList, setSupplierList] = useState<SupplierType[]>([]);
+
+
+  useEffect(() => {
+    handleGetSupplier();
+  }, []);
+
+  const handleGetSupplier = async () => {
+    try {
+      const res = await GetSupplierApi(0, 10, true);
+      if (res.data.isSuccess) {
+        setSupplierList(res.data.result);
+      }
+    } catch (error) {
+
+    }
+  }
 
   const handleAddNew = () => {
     setEditingSupplier(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (supplier: Supplier) => {
+  const handleEdit = (supplier: SupplierType) => {
     setEditingSupplier(supplier);
     setIsModalOpen(true);
   };
@@ -31,26 +47,47 @@ const SupplierMasterPage: React.FC = () => {
     setSupplierToDelete(supplierId);
     setIsConfirmModalOpen(true);
   };
-  
+
   const confirmDelete = () => {
     if (supplierToDelete) {
-      deleteSupplier(supplierToDelete);
+      DeleteSupplierApi(supplierToDelete);
     }
     setIsConfirmModalOpen(false);
     setSupplierToDelete(null);
   };
 
-  const handleSave = (supplierData: Partial<Supplier>) => {
+  const handleSave = async (supplierData: Partial<SupplierType>) => {
+    let param: SupplierBaseDto = {
+      code: supplierData.code || '',
+      name: supplierData.name || '',
+      contactPerson: supplierData.contactPerson || null,
+      email: supplierData.email || null,
+      phone: supplierData.phone || null,
+      gstin: supplierData.gstin || null,
+      pan: supplierData.pan || null,
+      addressLine1: supplierData.addressLine1 || '',
+      addressLine2: supplierData.addressLine2 || null,
+      city: supplierData.city || null,
+      state: supplierData.state || null,
+      country: supplierData.country || null,
+      pinCode: supplierData.pinCode || null,
+      gstType: supplierData.gstType || null,
+      creditLimit: supplierData.creditLimit || null,
+      paymentTerms: supplierData.paymentTerms || null,
+      bankName: supplierData.bankName || null,
+      accountNumber: supplierData.accountNumber || null,
+      ifscCode: supplierData.ifscCode || null,
+    }
     if (editingSupplier) {
-      updateSupplier(editingSupplier.id, supplierData);
+      await UpdateSupplierApi(editingSupplier.id, param);
     } else {
-      addSupplier(supplierData);
+      await CreateSupplierApi(param);
     }
     setIsModalOpen(false);
     setEditingSupplier(null);
   };
 
-  const columns: Column<Supplier>[] = [
+  const columns: Column<SupplierType>[] = [
     { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
     { header: 'Email', accessor: 'email', sortKey: 'email' },
     { header: 'Phone', accessor: 'phone', sortKey: 'phone' },
@@ -58,7 +95,7 @@ const SupplierMasterPage: React.FC = () => {
     { header: 'City', accessor: 'city', sortKey: 'city' },
     {
       header: 'Actions',
-      accessor: (row: Supplier) => (
+      accessor: (row: SupplierType) => (
         <div className="flex space-x-1">
           <Tooltip text="Edit">
             <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
@@ -81,10 +118,10 @@ const SupplierMasterPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Supplier Master</h1>
         <Button onClick={handleAddNew}>Add New Supplier</Button>
       </div>
-      
-      <DataTable 
-        columns={columns} 
-        data={suppliers}
+
+      <DataTable
+        columns={columns}
+        data={supplierList}
         searchKeys={['name', 'email', 'gstin', 'phone', 'city', 'state']}
         searchPlaceholder="Search Suppliers..."
       />
@@ -94,7 +131,7 @@ const SupplierMasterPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         title={editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}
       >
-        <SupplierForm 
+        <SupplierForm
           supplier={editingSupplier}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}

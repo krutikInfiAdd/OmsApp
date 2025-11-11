@@ -20,6 +20,14 @@ export let mockUsers: User[] = [
     companyId: mockCompanies[1].id,
     role: UserRole.Sales,
   },
+   {
+    id: 'U001',
+    name: 'Admin User',
+    email: 'SuperAdminInfi@yopmail.com',
+    password: 'Adm!n123',
+    companyId: mockCompanies[0].id,
+    role: UserRole.Admin,
+  },
 ];
 
 export const addUser = (user: Omit<User, 'id'>): User => {

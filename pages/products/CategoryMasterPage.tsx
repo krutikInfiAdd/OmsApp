@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Category, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -9,13 +9,31 @@ import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useData } from '../../contexts/DataContext';
+import { CategoriesBaseDto, CategoriesType, CreateCategoriesApi, DeleteCategoriesApi, GetCategoriesApi, UpdateCategoriesApi } from '@/apis/service/category';
 
 const CategoryMasterPage: React.FC = () => {
   const { categories, addCategory, updateCategory, deleteCategory } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingCategory, setEditingCategory] = useState<CategoriesType | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+  const [categoryList, setCategoryList] = useState<CategoriesType[]>([]);
+
+  useEffect(() => {
+    handleGetCategory();
+  }, []);
+
+
+  const handleGetCategory = async () => {
+    try {
+      const res = await GetCategoriesApi(0, 10, true);
+      if (res.data.isSuccess) {
+        setCategoryList(res.data.result);
+      }
+    } catch (error) {
+
+    }
+  }
 
   const handleAddNew = () => {
     setEditingCategory(null);
@@ -31,33 +49,39 @@ const CategoryMasterPage: React.FC = () => {
     setCategoryToDelete(categoryId);
     setIsConfirmModalOpen(true);
   };
-  
+
   const confirmDelete = () => {
     if (categoryToDelete) {
-      deleteCategory(categoryToDelete);
+      DeleteCategoriesApi(categoryToDelete);
       // In a real app, you'd also want to handle subcategories and products that belong to this category.
     }
     setIsConfirmModalOpen(false);
     setCategoryToDelete(null);
   };
 
-  const handleSave = (categoryData: Partial<Category>) => {
+  const handleSave = (categoryData: Partial<CategoriesType>) => {
+    let param: CategoriesBaseDto = {
+      name: categoryData.name || '',
+      description: categoryData.description || '',
+      code: categoryData.code || ''
+    }
+
     if (editingCategory) {
-      updateCategory(editingCategory.id, categoryData);
+      UpdateCategoriesApi(editingCategory.id, param);
     } else {
-      addCategory(categoryData);
+      CreateCategoriesApi(param);
     }
     setIsModalOpen(false);
     setEditingCategory(null);
   };
 
-  const columns: Column<Category>[] = [
+  const columns: Column<CategoriesType>[] = [
     { header: 'ID', accessor: 'id', sortKey: 'id' },
     { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
     { header: 'Description', accessor: 'description', sortKey: 'description' },
     {
       header: 'Actions',
-      accessor: (row: Category) => (
+      accessor: (row: CategoriesType) => (
         <div className="flex space-x-1">
           <Tooltip text="Edit">
             <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
@@ -80,10 +104,10 @@ const CategoryMasterPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Category Master</h1>
         <Button onClick={handleAddNew}>Add New Category</Button>
       </div>
-      
-      <DataTable 
-        columns={columns} 
-        data={categories}
+
+      <DataTable
+        columns={columns}
+        data={categoryList}
         searchKeys={['name', 'id', 'description']}
         searchPlaceholder="Search Categories..."
       />
@@ -93,7 +117,7 @@ const CategoryMasterPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         title={editingCategory ? 'Edit Category' : 'Add New Category'}
       >
-        <CategoryForm 
+        <CategoryForm
           category={editingCategory}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Company, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -8,14 +8,30 @@ import { DataTable } from '../../components/ui/DataTable';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
-import { useData } from '../../contexts/DataContext';
+import { CompanyBase, CompanyType, CreateCompanyApi, DeleteCompanyApi, GetCompaniesApi, UpdateCompanyApi } from '@/apis/service/company';
 
 const CompanyProfilePage: React.FC = () => {
-  const { companies, addCompany, updateCompany, deleteCompany } = useData();
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  const [editingCompany, setEditingCompany] = useState<CompanyType | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<string | null>(null);
+  const [companyList, setcompanyList] = useState<CompanyType[]>([]);
+
+  useEffect(() => {
+    handleGetCompanies();
+  }, []);
+
+
+  const handleGetCompanies = async () => {
+    try {
+      const res = await GetCompaniesApi(0, 10, true);
+      if (res.data.isSuccess) {
+        setcompanyList(res.data.result);
+      }
+    } catch (error) {
+
+    }
+  }
 
   const handleAddNew = () => {
     setEditingCompany(null);
@@ -31,26 +47,37 @@ const CompanyProfilePage: React.FC = () => {
     setCompanyToDelete(companyId);
     setIsConfirmModalOpen(true);
   };
-  
-  const confirmDelete = () => {
+
+  const confirmDelete = async () => {
     if (companyToDelete) {
-      deleteCompany(companyToDelete);
+      await DeleteCompanyApi(companyToDelete);
     }
     setIsConfirmModalOpen(false);
     setCompanyToDelete(null);
+    await handleGetCompanies();
   };
 
-  const handleSave = (companyData: Partial<Company>) => {
+  const handleSave = (companyData: Partial<CompanyType>) => {
+    let param: CompanyBase = {
+      address: companyData.address || '',
+      country: companyData.country || '',
+      email: companyData.email || '',
+      gstin: companyData.gstin || '',
+      name: companyData.name || '',
+      pan: companyData.pan || '',
+      phone: companyData.phone || '',
+      state: companyData.state || '',
+    }
     if (editingCompany) {
-      updateCompany(editingCompany.id, companyData);
+      UpdateCompanyApi(editingCompany.id, param);
     } else {
-      addCompany(companyData);
+      CreateCompanyApi(param);
     }
     setIsFormModalOpen(false);
     setEditingCompany(null);
   };
 
-  const columns: Column<Company>[] = [
+  const columns: Column<CompanyType>[] = [
     { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
     { header: 'Email', accessor: 'email', sortKey: 'email' },
     { header: 'Phone', accessor: 'phone', sortKey: 'phone' },
@@ -81,9 +108,9 @@ const CompanyProfilePage: React.FC = () => {
         <Button onClick={handleAddNew}>Add New Company</Button>
       </div>
 
-      <DataTable 
-        columns={columns} 
-        data={companies} 
+      <DataTable
+        columns={columns}
+        data={companyList}
         searchKeys={['name', 'email', 'phone', 'gstin', 'pan']}
         searchPlaceholder="Search by Name, Email, Phone..."
       />
@@ -93,7 +120,7 @@ const CompanyProfilePage: React.FC = () => {
         onClose={() => setIsFormModalOpen(false)}
         title={editingCompany ? 'Edit Company Profile' : 'Add New Company'}
       >
-        <CompanyForm 
+        <CompanyForm
           company={editingCompany}
           onSave={handleSave}
           onCancel={() => setIsFormModalOpen(false)}

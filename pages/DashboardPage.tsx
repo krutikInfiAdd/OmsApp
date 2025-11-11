@@ -2,9 +2,8 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card } from '../components/ui/Card';
 import { dashboardMetrics, monthlySalesData } from '../data/mockData';
-import { mockInvoices, mockCustomers } from '../data/mockData';
+import { mockInvoices } from '../data/mockData';
 import { Badge } from '../components/ui/Badge';
-import { InvoiceStatus } from '../types';
 
 const DashboardPage: React.FC = () => {
 

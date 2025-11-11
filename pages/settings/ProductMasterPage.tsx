@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // Fix: Import mockTaxes to get tax data.
 import { mockProducts, mockCategories, mockSubcategories, mockTaxes } from '../../data/mockData';
 // Fix: Import Tax type.
-import { Product, Column, Category, Subcategory, Tax, ProductUnit } from '../../types';
+import { Product, Column, Category, Subcategory, Tax } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { ProductForm } from '../../components/forms/ProductForm';

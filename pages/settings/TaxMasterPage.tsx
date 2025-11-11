@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tax, Column, TaxType } from '../../types';
+import { Tax, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { TaxForm } from '../../components/forms/TaxForm';

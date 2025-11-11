@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Company, Column, UserRole } from '../../types';
+import { User, Column, UserRole } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { UserForm } from '../../components/forms/UserForm';
@@ -131,3 +131,6 @@ const UserRolesPage: React.FC = () => {
 };
 
 export default UserRolesPage;
+
+
+

@@ -13,15 +13,17 @@ interface DataTableProps<T extends { id: any }> {
   data: T[];
   searchKeys: (keyof T | string)[];
   searchPlaceholder?: string;
+  totalItems?: number;
 }
 
 export function DataTable<T extends { id: string }>({
   columns,
   data,
   searchKeys,
-  searchPlaceholder = 'Search...'
+  searchPlaceholder = 'Search...',
+  totalItems: parentTotalItems,
 }: DataTableProps<T>): React.ReactElement {
-  
+
   const {
     paginatedData,
     requestSort,
@@ -33,9 +35,9 @@ export function DataTable<T extends { id: string }>({
     handlePageChange,
     itemsPerPage,
     handleItemsPerPageChange,
-    totalItems,
+    totalItems: internalTotalItems,
   } = useDataTable(data, searchKeys);
-
+  const totalItems = parentTotalItems ?? internalTotalItems;
   const getSortIcon = (key?: keyof T) => {
     if (!key || !sortConfig || sortConfig.key !== key) {
       return <SwitchVerticalIcon className="h-4 w-4 ml-1 text-gray-400" />;
@@ -96,10 +98,10 @@ export function DataTable<T extends { id: string }>({
         </table>
       </div>
       {data.length > 0 && paginatedData.length === 0 ? (
-         <div className="text-center py-10">
-            <p className="text-gray-500 dark:text-gray-400">
-              No results found for your search.
-            </p>
+        <div className="text-center py-10">
+          <p className="text-gray-500 dark:text-gray-400">
+            No results found for your search.
+          </p>
         </div>
       ) : data.length === 0 ? (
         <div className="text-center py-10">
@@ -107,12 +109,12 @@ export function DataTable<T extends { id: string }>({
         </div>
       ) : (
         <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-            onItemsPerPageChange={handleItemsPerPageChange}
-            totalItems={totalItems}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          totalItems={totalItems}
         />
       )}
     </div>
@@ -121,5 +123,5 @@ export function DataTable<T extends { id: string }>({
 
 // Helper to get nested property values
 const getNestedValue = (obj: any, path: string): any => {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 };
