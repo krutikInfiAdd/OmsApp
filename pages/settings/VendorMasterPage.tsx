@@ -38,7 +38,7 @@ const VendorMasterPage: React.FC = () => {
       const res = await GetVendorApi(currentPage, itemsPerPage, true);
       if (res.data.isSuccess) {
         setVendorList(res.data.result);
-                setTotalItems(res.data.totalRecords);
+        setTotalItems(res.data.totalRecords);
       }
     } catch (error) {
     }
