@@ -9,7 +9,7 @@ import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useData } from '../../contexts/DataContext';
-import { CategoriesBaseDto, CategoriesType, CreateCategoriesApi, DeleteCategoriesApi, GetCategoriesApi, UpdateCategoriesApi } from '@/apis/service/category';
+import { CategoriesBaseDto, CategoriesType, CreateCategoriesApi, DeleteCategoriesApi, GetCategoriesApi, UpdateCategoriesApi } from '@/apis/service/category/index.api';
 
 const CategoryMasterPage: React.FC = () => {
   const { categories, addCategory, updateCategory, deleteCategory } = useData();
@@ -19,16 +19,26 @@ const CategoryMasterPage: React.FC = () => {
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [categoryList, setCategoryList] = useState<CategoriesType[]>([]);
 
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
   useEffect(() => {
     handleGetCategory();
-  }, []);
-
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
 
   const handleGetCategory = async () => {
     try {
-      const res = await GetCategoriesApi(0, 10, true);
+      const res = await GetCategoriesApi(currentPage, itemsPerPage, true);
       if (res.data.isSuccess) {
         setCategoryList(res.data.result);
+        setTotalItems(res.data.totalRecords);
       }
     } catch (error) {
 
@@ -108,8 +118,15 @@ const CategoryMasterPage: React.FC = () => {
       <DataTable
         columns={columns}
         data={categoryList}
-        searchKeys={['name', 'id', 'description']}
-        searchPlaceholder="Search Categories..."
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof CategoriesType}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
       />
 
       <Modal

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { User, Column, UserRole } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -31,6 +31,21 @@ const UserRolesPage: React.FC = () => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
+
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
+  useEffect(() => {
+    // handleGetSupplier();
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
+
   const handleAddNew = () => {
     setEditingUser(null);
     setIsModalOpen(true);
@@ -45,7 +60,7 @@ const UserRolesPage: React.FC = () => {
     setUserToDelete(userId);
     setIsConfirmModalOpen(true);
   };
-  
+
   const confirmDelete = () => {
     if (userToDelete) {
       deleteUser(userToDelete);
@@ -67,10 +82,10 @@ const UserRolesPage: React.FC = () => {
   const columns: Column<User>[] = [
     { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
     { header: 'Email', accessor: 'email', sortKey: 'email' },
-    { 
-      header: 'Company', 
-      accessor: (row) => companies.find(c => c.id === row.companyId)?.name || 'N/A', 
-      sortKey: 'companyId' 
+    {
+      header: 'Company',
+      accessor: (row) => companies.find(c => c.id === row.companyId)?.name || 'N/A',
+      sortKey: 'companyId'
     },
     { header: 'Role', accessor: (row) => <RoleBadge role={row.role} />, sortKey: 'role' },
     {
@@ -98,12 +113,19 @@ const UserRolesPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Users & Roles</h1>
         <Button onClick={handleAddNew}>Add New User</Button>
       </div>
-      
-      <DataTable 
-        columns={columns} 
+
+      <DataTable
+        columns={columns}
         data={users}
-        searchKeys={['name', 'email', 'role']}
-        searchPlaceholder="Search by Name, Email, or Role..."
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof User}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
       />
 
       <Modal
@@ -111,7 +133,7 @@ const UserRolesPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         title={editingUser ? 'Edit User' : 'Add New User'}
       >
-        <UserForm 
+        <UserForm
           user={editingUser}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}

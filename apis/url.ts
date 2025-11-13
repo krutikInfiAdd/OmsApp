@@ -29,6 +29,7 @@ export const APISURLS = {
         Create: `${BaseURl}/Vendors/add`,
         Delete: `${BaseURl}/Vendors/delete`,
         Update: `${BaseURl}/Vendors/update`,
+        DDL: `${BaseURl}/Vendors/get-list-items`,
     },
 
     Categories: {
@@ -53,6 +54,7 @@ export const APISURLS = {
         Create: `${BaseURl}/Products/add`,
         Delete: `${BaseURl}/Products/delete`,
         Update: `${BaseURl}/Products/update`,
+        DDL: `${BaseURl}/Products/get-list-items`,
     },
 
     Supplier: {
@@ -65,10 +67,10 @@ export const APISURLS = {
 
 
     TaxSlabs: {
-        GetAll: `${BaseURl}/SubCategory/get-all`,
-        Create: `${BaseURl}/SubCategory/add`,
-        Delete: `${BaseURl}/SubCategory/delete`,
-        Update: `${BaseURl}/SubCategory/update`,
+        GetAll: `${BaseURl}/TaxSlabs/get-all`,
+        Create: `${BaseURl}/TaxSlabs/add`,
+        Delete: `${BaseURl}/TaxSlabs/delete`,
+        Update: `${BaseURl}/TaxSlabs/update`,
         DDL: `${BaseURl}/TaxSlabs/get-list-items`,
     },
 

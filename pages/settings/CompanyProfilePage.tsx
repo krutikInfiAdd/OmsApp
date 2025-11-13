@@ -8,7 +8,7 @@ import { DataTable } from '../../components/ui/DataTable';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
-import { CompanyBase, CompanyType, CreateCompanyApi, DeleteCompanyApi, GetCompaniesApi, UpdateCompanyApi } from '@/apis/service/company';
+import { CompanyBase, CompanyType, CreateCompanyApi, DeleteCompanyApi, GetCompaniesApi, UpdateCompanyApi } from '@/apis/service/company/index.api';
 
 const CompanyProfilePage: React.FC = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -17,16 +17,26 @@ const CompanyProfilePage: React.FC = () => {
   const [companyToDelete, setCompanyToDelete] = useState<string | null>(null);
   const [companyList, setcompanyList] = useState<CompanyType[]>([]);
 
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
   useEffect(() => {
     handleGetCompanies();
-  }, []);
-
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
 
   const handleGetCompanies = async () => {
     try {
-      const res = await GetCompaniesApi(0, 10, true);
+      const res = await GetCompaniesApi(currentPage, itemsPerPage, true);
       if (res.data.isSuccess) {
         setcompanyList(res.data.result);
+        setTotalItems(res.data.totalRecords);
       }
     } catch (error) {
 
@@ -111,8 +121,16 @@ const CompanyProfilePage: React.FC = () => {
       <DataTable
         columns={columns}
         data={companyList}
-        searchKeys={['name', 'email', 'phone', 'gstin', 'pan']}
-        searchPlaceholder="Search by Name, Email, Phone..."
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof CompanyType}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
+
       />
 
       <Modal

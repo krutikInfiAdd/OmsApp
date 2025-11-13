@@ -8,8 +8,7 @@ import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
-import { CreateSupplierApi, DeleteSupplierApi, GetSupplierApi, SupplierBaseDto, SupplierType, UpdateSupplierApi } from '@/apis/service/supplier';
-
+import { CreateSupplierApi, DeleteSupplierApi, GetSupplierApi, SupplierBaseDto, SupplierType, UpdateSupplierApi } from '@/apis/service/supplier/index.api';
 const SupplierMasterPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
@@ -17,16 +16,26 @@ const SupplierMasterPage: React.FC = () => {
   const [supplierToDelete, setSupplierToDelete] = useState<string | null>(null);
   const [supplierList, setSupplierList] = useState<SupplierType[]>([]);
 
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
 
   useEffect(() => {
     handleGetSupplier();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
 
   const handleGetSupplier = async () => {
     try {
-      const res = await GetSupplierApi(0, 10, true);
+      const res = await GetSupplierApi(currentPage, itemsPerPage, true);
       if (res.data.isSuccess) {
         setSupplierList(res.data.result);
+        setTotalItems(res.data.totalRecords);
       }
     } catch (error) {
 
@@ -122,8 +131,16 @@ const SupplierMasterPage: React.FC = () => {
       <DataTable
         columns={columns}
         data={supplierList}
-        searchKeys={['name', 'email', 'gstin', 'phone', 'city', 'state']}
-        searchPlaceholder="Search Suppliers..."
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof SupplierType}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
+
       />
 
       <Modal

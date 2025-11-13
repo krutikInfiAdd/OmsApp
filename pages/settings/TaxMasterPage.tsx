@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tax, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -9,20 +9,48 @@ import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useData } from '../../contexts/DataContext';
+import { CreateTaxSlabsApi, DeleteTaxSlabsApi, GetTaxSlabsApi, TaxSlabsBaseDto, TaxSlabsType, UpdateTaxSlabsApi } from '@/apis/service/taxSlabs/index.api';
 
 const TaxMasterPage: React.FC = () => {
   const { taxes, addTax, updateTax, deleteTax } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTax, setEditingTax] = useState<Tax | null>(null);
+  const [editingTax, setEditingTax] = useState<TaxSlabsType | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [taxToDelete, setTaxToDelete] = useState<string | null>(null);
+  const [taxList, setTaxList] = useState<TaxSlabsType[]>([]);
+
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
+  useEffect(() => {
+    handleGetTaxSlabs();
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
+
+  const handleGetTaxSlabs = async () => {
+    try {
+      const res = await GetTaxSlabsApi(currentPage, itemsPerPage, true);
+      if (res.data.isSuccess) {
+        setTaxList(res.data.result);
+        setTotalItems(res.data.totalRecords);
+      }
+    } catch (error) {
+
+    }
+  }
 
   const handleAddNew = () => {
     setEditingTax(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (tax: Tax) => {
+  const handleEdit = (tax: TaxSlabsType) => {
     setEditingTax(tax);
     setIsModalOpen(true);
   };
@@ -31,33 +59,45 @@ const TaxMasterPage: React.FC = () => {
     setTaxToDelete(taxId);
     setIsConfirmModalOpen(true);
   };
-  
-  const confirmDelete = () => {
+
+  const confirmDelete = async () => {
     if (taxToDelete) {
-      deleteTax(taxToDelete);
+      await DeleteTaxSlabsApi(taxToDelete);
     }
     setIsConfirmModalOpen(false);
     setTaxToDelete(null);
+    await handleGetTaxSlabs();
   };
 
-  const handleSave = (taxData: Partial<Tax>) => {
+  const handleSave = async (taxData: Partial<TaxSlabsType>) => {
+    let param: TaxSlabsBaseDto = {
+      hsnCode: taxData.hsnCode || '',
+      productType: taxData.productType || '',
+      description: taxData.description || '',
+      cgst: taxData.cgst || 0,
+      sgst: taxData.sgst || 0,
+      igst: taxData.igst || 0,
+    };
     if (editingTax) {
-      updateTax(editingTax.id, taxData);
+      await UpdateTaxSlabsApi(editingTax.id, param);
     } else {
-      addTax(taxData);
+      await CreateTaxSlabsApi(param);
     }
     setIsModalOpen(false);
     setEditingTax(null);
+    await handleGetTaxSlabs();
   };
 
-  const columns: Column<Tax>[] = [
-    { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
-    { header: 'Type', accessor: 'type', sortKey: 'type' },
-    { header: 'Rate', accessor: (row) => `${row.rate}%`, sortKey: 'rate' },
+  const columns: Column<TaxSlabsType>[] = [
+    // { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
+    // { header: 'Type', accessor: 'type', sortKey: 'type' },
+    { header: 'Cgst', accessor: (row) => `${row.cgst}%`, sortKey: 'cgst' },
+    { header: 'Sgst', accessor: (row) => `${row.sgst}%`, sortKey: 'sgst' },
+    { header: 'Igst', accessor: (row) => `${row.igst}%`, sortKey: 'igst' },
     { header: 'Description', accessor: (row) => row.description || '-', sortKey: 'description' },
     {
       header: 'Actions',
-      accessor: (row: Tax) => (
+      accessor: (row: TaxSlabsType) => (
         <div className="flex space-x-1">
           <Tooltip text="Edit">
             <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
@@ -80,12 +120,20 @@ const TaxMasterPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Tax Master</h1>
         <Button onClick={handleAddNew}>Add New Tax Rule</Button>
       </div>
-      
-      <DataTable 
-        columns={columns} 
-        data={taxes}
-        searchKeys={['name', 'type', 'description']}
-        searchPlaceholder="Search by Name, Type, or Description..."
+
+      <DataTable
+        columns={columns}
+        data={taxList}
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof TaxSlabsType}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
+
       />
 
       <Modal
@@ -93,7 +141,7 @@ const TaxMasterPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         title={editingTax ? 'Edit Tax Rule' : 'Add New Tax Rule'}
       >
-        <TaxForm 
+        <TaxForm
           tax={editingTax}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}

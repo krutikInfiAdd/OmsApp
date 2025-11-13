@@ -18,20 +18,30 @@ import SalesReportPDF from '../../components/pdf/SalesReportPDF';
 
 // Placeholder data for charts when no invoices are in the selected range
 const placeholderSalesTrend = [
-    { date: 'Day 1', sales: 40000 }, { date: 'Day 5', sales: 62000 },
-    { date: 'Day 10', sales: 55000 }, { date: 'Day 15', sales: 78000 },
-    { date: 'Day 20', sales: 83000 }, { date: 'Day 25', sales: 76000 },
-    { date: 'Day 30', sales: 95000 },
+  { date: 'Day 1', sales: 40000 }, { date: 'Day 5', sales: 62000 },
+  { date: 'Day 10', sales: 55000 }, { date: 'Day 15', sales: 78000 },
+  { date: 'Day 20', sales: 83000 }, { date: 'Day 25', sales: 76000 },
+  { date: 'Day 30', sales: 95000 },
 ];
 const placeholderTopProducts = [
-    { name: 'Sample A', quantity: 58 }, { name: 'Sample B', quantity: 45 },
-    { name: 'Sample C', quantity: 32 }, { name: 'Sample D', quantity: 24 },
-    { name: 'Sample E', quantity: 18 },
+  { name: 'Sample A', quantity: 58 }, { name: 'Sample B', quantity: 45 },
+  { name: 'Sample C', quantity: 32 }, { name: 'Sample D', quantity: 24 },
+  { name: 'Sample E', quantity: 18 },
 ];
 
 
 const SalesReportsPage: React.FC = () => {
   const { invoices } = useData();
+
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
 
   const getFirstDayOfMonth = () => {
     const now = new Date();
@@ -68,7 +78,7 @@ const SalesReportsPage: React.FC = () => {
 
     return { totalSales, totalInvoices, avgInvoiceValue, topCustomer };
   }, [filteredInvoices]);
-  
+
   const salesTrendData = useMemo(() => {
     if (filteredInvoices.length === 0) return placeholderSalesTrend;
 
@@ -83,7 +93,7 @@ const SalesReportsPage: React.FC = () => {
 
   const topSellingProductsData = useMemo(() => {
     if (filteredInvoices.length === 0) return placeholderTopProducts;
-    
+
     const productQuantities: { [name: string]: number } = {};
     filteredInvoices.forEach(inv => {
       inv.items.forEach(item => {
@@ -102,7 +112,7 @@ const SalesReportsPage: React.FC = () => {
     const tempContainer = document.createElement('div');
     tempContainer.style.position = 'absolute';
     tempContainer.style.left = '-9999px';
-    tempContainer.style.width = '794px'; 
+    tempContainer.style.width = '794px';
     document.body.appendChild(tempContainer);
 
     const root = ReactDOM.createRoot(tempContainer);
@@ -116,15 +126,15 @@ const SalesReportsPage: React.FC = () => {
         filteredInvoices={filteredInvoices}
       />
     );
-    
-    await new Promise(resolve => setTimeout(resolve, 500)); 
+
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const canvas = await html2canvas(tempContainer, {
-      scale: 2, 
+      scale: 2,
       useCORS: true,
       logging: false,
     });
-    
+
     document.body.removeChild(tempContainer);
 
     const imgData = canvas.toDataURL('image/png');
@@ -140,11 +150,11 @@ const SalesReportsPage: React.FC = () => {
     const canvasHeight = canvas.height;
     const ratio = canvasWidth / canvasHeight;
     let imgHeight = pdfWidth / ratio;
-    
+
     let finalHeight = imgHeight;
     if (imgHeight > pdfHeight) {
-        console.warn("Report content is taller than a single page. Content will be scaled to fit.");
-        finalHeight = pdfHeight;
+      console.warn("Report content is taller than a single page. Content will be scaled to fit.");
+      finalHeight = pdfHeight;
     }
 
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, finalHeight);
@@ -163,12 +173,12 @@ const SalesReportsPage: React.FC = () => {
     <div className="space-y-8 print-wrapper">
       <div className="flex flex-col sm:flex-row justify-between items-center print:hidden">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Sales Reports</h1>
-         <Button onClick={handleDownloadPdf} className="flex items-center space-x-2 mt-4 sm:mt-0">
+        <Button onClick={handleDownloadPdf} className="flex items-center space-x-2 mt-4 sm:mt-0">
           <PrintIcon className="h-4 w-4" />
           <span>Print Report</span>
         </Button>
       </div>
-      
+
       <Card className="print:shadow-none print:border-none print:p-0">
         <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 print:hidden">
           <h2 className="text-lg font-semibold">Report Filters</h2>
@@ -185,8 +195,8 @@ const SalesReportsPage: React.FC = () => {
         </div>
 
         <div className="hidden print:block text-center mb-4">
-            <h2 className="text-xl font-bold">Sales Report</h2>
-            <p>From {startDate} to {endDate}</p>
+          <h2 className="text-xl font-bold">Sales Report</h2>
+          <p>From {startDate} to {endDate}</p>
         </div>
 
         {/* KPI Cards */}
@@ -212,47 +222,54 @@ const SalesReportsPage: React.FC = () => {
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
-            <Card>
-                <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Sales Trend</h3>
-                <div style={{ width: '100%', height: 300 }}>
-                <ResponsiveContainer>
-                    <LineChart data={salesTrendData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(229, 231, 235, 0.5)" />
-                    <XAxis dataKey="date" tick={{ fill: '#6b7280' }} fontSize={12} />
-                    <YAxis tickFormatter={(value) => `${Number(value) / 1000}k`} tick={{ fill: '#6b7280' }} />
-                    <Tooltip contentStyle={{ backgroundColor: 'rgba(31, 41, 55, 0.8)', borderColor: '#4b5563', color: '#ffffff', borderRadius: '0.5rem' }} />
-                    <Legend />
-                    <Line type="monotone" dataKey="sales" stroke="#3b82f6" name="Sales (INR)" strokeWidth={2} dot={false} />
-                    </LineChart>
-                </ResponsiveContainer>
-                </div>
-            </Card>
-            <Card>
-                <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Top 5 Selling Products (by Qty)</h3>
-                <div style={{ width: '100%', height: 300 }}>
-                    <ResponsiveContainer>
-                        <BarChart data={topSellingProductsData} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(229, 231, 235, 0.5)" />
-                        <XAxis type="number" tick={{ fill: '#6b7280' }} />
-                        <YAxis type="category" dataKey="name" width={120} tick={{ fill: '#6b7280' }} fontSize={12} interval={0} />
-                        <Tooltip contentStyle={{ backgroundColor: 'rgba(31, 41, 55, 0.8)', borderColor: '#4b5563', color: '#ffffff', borderRadius: '0.5rem' }} />
-                        <Legend />
-                        <Bar dataKey="quantity" fill="#8884d8" name="Quantity Sold" radius={[0, 4, 4, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-            </Card>
+          <Card>
+            <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Sales Trend</h3>
+            <div style={{ width: '100%', height: 300 }}>
+              <ResponsiveContainer>
+                <LineChart data={salesTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(229, 231, 235, 0.5)" />
+                  <XAxis dataKey="date" tick={{ fill: '#6b7280' }} fontSize={12} />
+                  <YAxis tickFormatter={(value) => `${Number(value) / 1000}k`} tick={{ fill: '#6b7280' }} />
+                  <Tooltip contentStyle={{ backgroundColor: 'rgba(31, 41, 55, 0.8)', borderColor: '#4b5563', color: '#ffffff', borderRadius: '0.5rem' }} />
+                  <Legend />
+                  <Line type="monotone" dataKey="sales" stroke="#3b82f6" name="Sales (INR)" strokeWidth={2} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+          <Card>
+            <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Top 5 Selling Products (by Qty)</h3>
+            <div style={{ width: '100%', height: 300 }}>
+              <ResponsiveContainer>
+                <BarChart data={topSellingProductsData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(229, 231, 235, 0.5)" />
+                  <XAxis type="number" tick={{ fill: '#6b7280' }} />
+                  <YAxis type="category" dataKey="name" width={120} tick={{ fill: '#6b7280' }} fontSize={12} interval={0} />
+                  <Tooltip contentStyle={{ backgroundColor: 'rgba(31, 41, 55, 0.8)', borderColor: '#4b5563', color: '#ffffff', borderRadius: '0.5rem' }} />
+                  <Legend />
+                  <Bar dataKey="quantity" fill="#8884d8" name="Quantity Sold" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
         </div>
 
         {/* Detailed Table */}
         <div className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Detailed Invoice List</h3>
-             <DataTable 
-                columns={invoiceColumns} 
-                data={filteredInvoices} 
-                searchKeys={['invoiceNumber', 'customer.name']}
-                searchPlaceholder="Search within this report..."
-            />
+          <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Detailed Invoice List</h3>
+          <DataTable
+            columns={invoiceColumns}
+            data={filteredInvoices}
+            totalItems={totalItems}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            sortKey={sortKey as any}
+            sortDirection={sortDirection}
+            onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+            onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+            onPageChange={(page) => setCurrentPage(page)}
+            onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
+          />
         </div>
       </Card>
     </div>

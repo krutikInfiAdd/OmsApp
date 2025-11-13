@@ -1,7 +1,7 @@
 import http from "@/apis/api";
 import { APISURLS } from "@/apis/url";
 import { BaseResponse, PaginationBaseResponse } from "@/utils/apiBaseResponse";
-import { BaseDto } from "../company";
+import { BaseDto } from "../company/index.api";
 
 export interface SupplierBaseDto {
     code: string;
