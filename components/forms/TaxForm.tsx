@@ -46,12 +46,18 @@ export const TaxForm: React.FC<TaxFormProps> = ({ tax, onSave, onCancel }) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Tax Name
+          <label htmlFor="productType" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            ProductType
           </label>
-          <Input type="text" name="name" id="name" value={formData.name || ''} onChange={handleChange} required className="mt-1" icon={<IdentificationIcon />} />
+          <Input type="text" name="productType" id="productType" value={formData.productType || ''} onChange={handleChange} required className="mt-1" icon={<IdentificationIcon />} />
         </div>
         <div>
+          <label htmlFor="hsnCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            HsnCode
+          </label>
+          <Input type="text" name="hsnCode" id="hsnCode" value={formData.hsnCode || ''} onChange={handleChange} required className="mt-1" icon={<IdentificationIcon />} />
+        </div>
+        {/* <div>
           <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Tax Type
           </label>
@@ -67,27 +73,57 @@ export const TaxForm: React.FC<TaxFormProps> = ({ tax, onSave, onCancel }) => {
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
-        </div>
+        </div> */}
       </div>
 
       <div>
-        <label htmlFor="rate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Rate (%)
+        <label htmlFor="cgst" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          cgst (%)
         </label>
-        <Input 
-          type="number" 
-          name="rate" 
-          id="rate" 
-          value={formData.rate === 0 ? '' : formData.rate} 
-          onChange={handleChange} 
-          required 
-          className="mt-1" 
+        <Input
+          type="number"
+          name="cgst"
+          id="cgst"
+          value={formData.cgst === 0 ? '' : formData.cgst}
+          onChange={handleChange}
+          className="mt-1"
           placeholder="e.g., 18"
           step="0.01"
           icon={<CurrencyRupeeIcon />}
         />
       </div>
-
+      <div>
+        <label htmlFor="igst" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          igst (%)
+        </label>
+        <Input
+          type="number"
+          name="igst"
+          id="igst"
+          value={formData.igst === 0 ? '' : formData.igst}
+          onChange={handleChange}
+          className="mt-1"
+          placeholder="e.g., 18"
+          step="0.01"
+          icon={<CurrencyRupeeIcon />}
+        />
+      </div>
+         <div>
+        <label htmlFor="sgst" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          igst (%)
+        </label>
+        <Input
+          type="number"
+          name="sgst"
+          id="sgst"
+          value={formData.sgst === 0 ? '' : formData.sgst}
+          onChange={handleChange}
+          className="mt-1"
+          placeholder="e.g., 18"
+          step="0.01"
+          icon={<CurrencyRupeeIcon />}
+        />
+      </div>
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Description

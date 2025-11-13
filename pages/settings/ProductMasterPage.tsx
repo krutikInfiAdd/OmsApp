@@ -22,6 +22,19 @@ const ProductMasterPage: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
+  // useEffect(() => {
+  //   handleGetCompanies();
+  // }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
 
   const handleAddNew = () => {
     setEditingProduct(null);
@@ -37,7 +50,7 @@ const ProductMasterPage: React.FC = () => {
     setProductToDelete(productId);
     setIsConfirmModalOpen(true);
   };
-  
+
   const confirmDelete = () => {
     if (productToDelete) {
       setProducts(products.filter(p => p.id !== productToDelete));
@@ -80,8 +93,8 @@ const ProductMasterPage: React.FC = () => {
     { header: 'Rate', accessor: (row) => formatCurrency(row.rate), sortKey: 'rate' },
     // Fix: Correctly display the tax rate by looking up the taxId in the taxes state.
     // Use 'taxId' for sorting.
-    { 
-      header: 'Tax', 
+    {
+      header: 'Tax',
       accessor: (row) => {
         const tax = taxes.find(t => t.id === row.taxId);
         return tax ? `${tax.rate}%` : '-';
@@ -113,12 +126,20 @@ const ProductMasterPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Product Master</h1>
         <Button onClick={handleAddNew}>Add New Product</Button>
       </div>
-      
-      <DataTable 
-        columns={columns} 
+
+      <DataTable
+        columns={columns}
         data={products}
-        searchKeys={['name', 'code', 'hsnCode']}
-        searchPlaceholder="Search Products..."
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof Product}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
+
       />
 
       <Modal
@@ -127,7 +148,7 @@ const ProductMasterPage: React.FC = () => {
         title={editingProduct ? 'Edit Product' : 'Add New Product'}
       >
         {/* Fix: Passed missing taxes prop to ProductForm */}
-        <ProductForm 
+        <ProductForm
           product={editingProduct}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}

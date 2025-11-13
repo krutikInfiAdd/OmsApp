@@ -8,8 +8,8 @@ import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
-import { CreateCustomerApi, CustomerResponse, DeleteCustomerApi, EditCustomer, GetCustomerApi, UpdateCustomerApi } from '@/apis/service/customer';
-import { CompanyDDLApi, CompanyDropdown } from '@/apis/service/company';
+import { CreateCustomerApi, CustomerResponse, DeleteCustomerApi, EditCustomer, GetCustomerApi, UpdateCustomerApi } from '@/apis/service/customer/index.api';
+import { CompanyDDLApi, CompanyDropdown } from '@/apis/service/company/index.api';
 
 const CustomerMasterPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,28 +18,52 @@ const CustomerMasterPage: React.FC = () => {
   const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
   const [customerList, setCustomerList] = useState<CustomerResponse[]>([]);
   const [companyList, setCompanyList] = useState<CompanyDropdown[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
 
   useEffect(() => {
-    handleGetCustomer();
     handleGetCompnies();
   }, []);
 
+  useEffect(() => {
+    handleGetCustomer();
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
+
   const handleGetCustomer = async () => {
     try {
-      const res = await GetCustomerApi(0, 10, true);
+      // API expects pageIndex starting from 0
+      const pageIndex = currentPage;
+      const res = await GetCustomerApi(pageIndex, itemsPerPage, true);
+      //       const res = await GetCustomerApi(
+      //   currentPage,
+      //   itemsPerPage,
+      //   true,
+      //   searchTerm,
+      //   sortKey,
+      //   sortDirection
+      // );
       if (res.data.isSuccess) {
         setCustomerList(res.data.result);
+        setTotalItems(res.data.totalRecords);
       }
     } catch (error) {
-
+      console.error('Error fetching customers:', error);
     }
-  }
+  };
 
   const handleGetCompnies = async () => {
     try {
       const res = await CompanyDDLApi();
       if (res.data.isSuccess) {
         setCompanyList(res.data.result);
+
       }
     } catch (error) {
 
@@ -137,9 +161,15 @@ const CustomerMasterPage: React.FC = () => {
       <DataTable
         columns={columns}
         data={customerList}
-        searchKeys={['name', 'email', 'gstin', 'phone', 'city', 'state', 'pan']}
-        searchPlaceholder="Search Customers..."
-        totalItems={132}
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof CustomerResponse}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
       />
 
       <Modal

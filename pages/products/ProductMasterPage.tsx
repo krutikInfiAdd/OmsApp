@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Product, Column, Category, Subcategory, Tax } from '../../types';
+import React, { useState,useEffect } from 'react';
+import { Product, Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { ProductForm } from '../../components/forms/ProductForm';
@@ -9,6 +9,7 @@ import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useData } from '../../contexts/DataContext';
+import { ProductType } from '@/apis/service/product/index.api';
 
 const ProductMasterPage: React.FC = () => {
   const { products, categories, subcategories, taxes, addProduct, updateProduct, deleteProduct } = useData();
@@ -16,6 +17,21 @@ const ProductMasterPage: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+
+  
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
+  useEffect(() => {
+    // handleGetCategory();
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
 
   const handleAddNew = () => {
     setEditingProduct(null);
@@ -31,7 +47,7 @@ const ProductMasterPage: React.FC = () => {
     setProductToDelete(productId);
     setIsConfirmModalOpen(true);
   };
-  
+
   const confirmDelete = () => {
     if (productToDelete) {
       deleteProduct(productToDelete);
@@ -58,8 +74,8 @@ const ProductMasterPage: React.FC = () => {
     { header: 'Category', accessor: (row) => categories.find(c => c.id === row.categoryId)?.name || '-', sortKey: 'categoryId' },
     { header: 'Subcategory', accessor: (row) => subcategories.find(s => s.id === row.subcategoryId)?.name || '-', sortKey: 'subcategoryId' },
     { header: 'Rate', accessor: (row) => formatCurrency(row.rate), sortKey: 'rate' },
-    { 
-      header: 'Tax', 
+    {
+      header: 'Tax',
       accessor: (row) => {
         const tax = taxes.find(t => t.id === row.taxId);
         return tax ? `${tax.rate}%` : '-';
@@ -91,12 +107,19 @@ const ProductMasterPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Product Master</h1>
         <Button onClick={handleAddNew}>Add New Product</Button>
       </div>
-      
-      <DataTable 
-        columns={columns} 
+
+      <DataTable
+        columns={columns}
         data={products}
-        searchKeys={['name', 'code', 'hsnCode']}
-        searchPlaceholder="Search Products..."
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof Product}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
       />
 
       <Modal
@@ -104,7 +127,7 @@ const ProductMasterPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         title={editingProduct ? 'Edit Product' : 'Add New Product'}
       >
-        <ProductForm 
+        <ProductForm
           product={editingProduct}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}

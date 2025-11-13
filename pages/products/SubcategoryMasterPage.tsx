@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Subcategory, Category, Column } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { Column } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { SubcategoryForm } from '../../components/forms/SubcategoryForm';
@@ -9,20 +9,66 @@ import { PencilIcon } from '../../components/icons/PencilIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useData } from '../../contexts/DataContext';
+import { CreateSubCategoriesApi, DeleteSubCategoriesApi, GetSubCategoriesApi, SubCategoriesBaseDto, SubCategoriesType, UpdateSubCategoriesApi } from '@/apis/service/subcategory/index.api';
+import { CategoriesDDLApi, CategoryDropdown } from '@/apis/service/category/index.api';
 
 const SubcategoryMasterPage: React.FC = () => {
-  const { subcategories, categories, addSubcategory, updateSubcategory, deleteSubcategory } = useData();
+  const { addSubcategory, updateSubcategory, deleteSubcategory } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSubcategory, setEditingSubcategory] = useState<Subcategory | null>(null);
+  const [editingSubcategory, setEditingSubcategory] = useState<SubCategoriesType | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [subcategoryToDelete, setSubcategoryToDelete] = useState<string | null>(null);
+  const [subCategoryList, setsubCategoryList] = useState<SubCategoriesType[]>([]);
+  const [categoriesList, setCategoriesList] = useState<CategoryDropdown[]>([]);
+
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
+  useEffect(() => {
+    handleGetsubCategory();
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
+
+  useEffect(() => {
+    handleGetCategoryDDL();
+  }, []);
+
+
+  const handleGetsubCategory = async () => {
+    try {
+      const res = await GetSubCategoriesApi(currentPage, itemsPerPage, true);
+      if (res.data.isSuccess) {
+        setsubCategoryList(res.data.result);
+        setTotalItems(res.data.totalRecords);
+      }
+    } catch (error) {
+
+    }
+  }
+
+  const handleGetCategoryDDL = async () => {
+    try {
+      const res = await CategoriesDDLApi();
+      if (res.data.isSuccess) {
+        setCategoriesList(res.data.result);
+      }
+    } catch (error) {
+
+    }
+  }
 
   const handleAddNew = () => {
     setEditingSubcategory(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (subcategory: Subcategory) => {
+  const handleEdit = (subcategory: SubCategoriesType) => {
     setEditingSubcategory(subcategory);
     setIsModalOpen(true);
   };
@@ -31,37 +77,45 @@ const SubcategoryMasterPage: React.FC = () => {
     setSubcategoryToDelete(subcategoryId);
     setIsConfirmModalOpen(true);
   };
-  
-  const confirmDelete = () => {
+
+  const confirmDelete = async () => {
     if (subcategoryToDelete) {
-      deleteSubcategory(subcategoryToDelete);
+      await DeleteSubCategoriesApi(subcategoryToDelete);
     }
     setIsConfirmModalOpen(false);
     setSubcategoryToDelete(null);
+    await handleGetsubCategory();
   };
 
-  const handleSave = (subcategoryData: Partial<Subcategory>) => {
+  const handleSave = async (subcategoryData: Partial<SubCategoriesType>) => {
+    let param: SubCategoriesBaseDto = {
+      name: subcategoryData.name || '',
+      description: subcategoryData.description || '',
+      categoryId: subcategoryData.categoryId || '',
+      code: subcategoryData.code || ''
+    }
     if (editingSubcategory) {
-      updateSubcategory(editingSubcategory.id, subcategoryData);
+      UpdateSubCategoriesApi(editingSubcategory.id, param);
     } else {
-      addSubcategory(subcategoryData);
+      CreateSubCategoriesApi(param);
     }
     setIsModalOpen(false);
     setEditingSubcategory(null);
+    await handleGetsubCategory();
   };
 
-  const columns: Column<Subcategory>[] = [
+  const columns: Column<SubCategoriesType>[] = [
     { header: 'ID', accessor: 'id', sortKey: 'id' },
     { header: 'Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
     { header: 'Description', accessor: 'description', sortKey: 'description' },
-    { 
-      header: 'Parent Category', 
-      accessor: (row) => categories.find(c => c.id === row.categoryId)?.name || 'N/A', 
-      sortKey: 'categoryId' 
+    {
+      header: 'Parent Category',
+      accessor: (row) => categoriesList.find(c => c.id === row.categoryId)?.name || 'N/A',
+      sortKey: 'categoryId'
     },
     {
       header: 'Actions',
-      accessor: (row: Subcategory) => (
+      accessor: (row: SubCategoriesType) => (
         <div className="flex space-x-1">
           <Tooltip text="Edit">
             <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
@@ -84,22 +138,28 @@ const SubcategoryMasterPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Subcategory Master</h1>
         <Button onClick={handleAddNew}>Add New Subcategory</Button>
       </div>
-      
-      <DataTable 
-        columns={columns} 
-        data={subcategories}
-        searchKeys={['name', 'id', 'description']}
-        searchPlaceholder="Search Subcategories..."
-      />
 
+      <DataTable
+        columns={columns}
+        data={subCategoryList}
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof SubCategoriesType}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
+      />
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingSubcategory ? 'Edit Subcategory' : 'Add New Subcategory'}
       >
-        <SubcategoryForm 
+        <SubcategoryForm
           subcategory={editingSubcategory}
-          categories={categories}
+          categories={categoriesList}
           onSave={handleSave}
           onCancel={() => setIsModalOpen(false)}
         />

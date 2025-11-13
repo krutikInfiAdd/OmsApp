@@ -39,7 +39,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
       setFormData(initialFormState);
     }
   }, [product]);
-  
+
   useEffect(() => {
     if (formData.categoryId) {
       setFilteredSubcategories(subcategories.filter(s => s.categoryId === formData.categoryId));
@@ -56,7 +56,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
       [name]: isNumber ? (value === '' ? '' : Number(value)) : value,
     }));
   };
-  
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -84,16 +84,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
           <label htmlFor="code" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Product Code
           </label>
-          <Input type="text" name="code" id="code" value={formData.code || ''} onChange={handleChange} required className="mt-1" icon={<HashtagIcon />} />
+          <Input type="text" name="code" id="code" value={formData.code || ''} onChange={handleChange} required className="mt-1" icon={<HashtagIcon />} disabled={true} />
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-         <div>
+        <div>
           <label htmlFor="hsnCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             HSN/SAC Code
           </label>
-          <Input type="text" name="hsnCode" id="hsnCode" value={formData.hsnCode || ''} onChange={handleChange} required className="mt-1" icon={<HashtagIcon />} />
+          <Input type="text" name="hsnCode" id="hsnCode" value={formData.hsnCode || ''} onChange={handleChange} required className="mt-1" icon={<HashtagIcon />} disabled={true} />
         </div>
         <div>
           <label htmlFor="unit" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -112,7 +112,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
         </div>
       </div>
 
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Category
@@ -154,7 +154,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
           <Input type="number" name="rate" id="rate" value={formData.rate === 0 ? '' : formData.rate} onChange={handleChange} required className="mt-1" placeholder="0.00" icon={<CurrencyRupeeIcon />} />
         </div>
         <div>
-           <label htmlFor="taxId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="taxId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Tax Rule
           </label>
           <select
@@ -170,7 +170,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories, s
           </select>
         </div>
       </div>
-      
+
       <div className="flex justify-end space-x-3 pt-4">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel

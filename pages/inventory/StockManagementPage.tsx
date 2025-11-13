@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product, Column } from '../../types';
 import { useData } from '../../contexts/DataContext';
 import { DataTable } from '../../components/ui/DataTable';
@@ -11,6 +11,20 @@ import { StockAdjustmentForm } from '../../components/forms/StockAdjustmentForm'
 const StockStatusBadge: React.FC<{ stock: number }> = ({ stock }) => {
   let classes = '';
   let text = '';
+
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
+  useEffect(() => {
+    // handleGetCategory();
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
 
   if (stock > 10) {
     classes = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
@@ -34,6 +48,19 @@ const StockManagementPage: React.FC = () => {
   const { products, updateProductStock } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<string | undefined>();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+
+  useEffect(() => {
+    // handleGetCategory();
+  }, [currentPage, itemsPerPage, searchTerm, sortKey, sortDirection]);
 
   const handleOpenModal = (product: Product) => {
     setSelectedProduct(product);
@@ -55,13 +82,13 @@ const StockManagementPage: React.FC = () => {
   const columns: Column<Product>[] = [
     { header: 'Product Name', accessor: (row) => <span className="font-medium text-gray-900 dark:text-white">{row.name}</span>, sortKey: 'name' },
     { header: 'Product Code', accessor: 'code', sortKey: 'code' },
-    { 
-      header: 'Current Stock', 
-      accessor: (row) => <span className="font-semibold">{`${row.stock} ${row.unit}`}</span>, 
-      sortKey: 'stock' 
+    {
+      header: 'Current Stock',
+      accessor: (row) => <span className="font-semibold">{`${row.stock} ${row.unit}`}</span>,
+      sortKey: 'stock'
     },
-    { 
-      header: 'Status', 
+    {
+      header: 'Status',
       accessor: (row) => <StockStatusBadge stock={row.stock} />,
       sortKey: 'stock'
     },
@@ -82,13 +109,21 @@ const StockManagementPage: React.FC = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Stock Management</h1>
       </div>
+
       <DataTable
         columns={columns}
         data={products}
-        searchKeys={['name', 'code']}
-        searchPlaceholder="Search by product name or code..."
+        totalItems={totalItems}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        sortKey={sortKey as keyof  Product}
+        sortDirection={sortDirection}
+        onSearch={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+        onSort={(key, dir) => { setSortKey(key as string); setSortDirection(dir); setCurrentPage(1); }}
+        onPageChange={(page) => setCurrentPage(page)}
+        onItemsPerPageChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
       />
-      
+
       {selectedProduct && (
         <Modal
           isOpen={isModalOpen}
